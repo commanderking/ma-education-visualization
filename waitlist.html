@@ -1,0 +1,113 @@
+<html>
+<head>
+  <script src='d3.js'></script>
+  <script src='lodash.js'></script>
+</head>
+<style>
+
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis--x path {
+  display: none;
+}
+
+</style>
+<body>
+  <h1>
+    Hey There!
+  </h1>
+<svg width="960" height="500"></svg>
+<script>
+  var revampedData = {};
+  var svg = d3.select("svg"),
+      margin = {top: 20, right: 20, bottom: 70, left: 80},
+      width = +svg.attr("width") - margin.left - margin.right,
+      height = +svg.attr("height") - margin.top - margin.bottom;
+
+  var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+      y = d3.scaleLinear().rangeRound([height, 0]);
+
+  var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  d3.json("data/CharterSchoolFY2018Enrollment.json", function(error, data) {
+    if (error) throw error;
+
+    const gradeLevels = ['PK', 'K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+
+    const waitListPerGrade = gradeLevels.map((grade) => {
+        let tally = 0;
+        console.log(grade);
+        _.forOwn(data, (school) => {
+          if (school[grade] !== "") {
+            tally += school[grade];
+            console.log(school[grade]);
+          }
+        })
+        console.log('tally', tally);
+        return { 
+          grade: grade,
+          tally: tally
+         };
+    })
+
+    console.log(waitListPerGrade); 
+
+    x.domain(gradeLevels.map(function(gradeLevel) { return gradeLevel; }));
+    y.domain([0, d3.max(waitListPerGrade, function(d) { return d.tally; })]);
+
+    g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+    g.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(y).ticks(10))
+      .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .text("Frequency");
+
+    g.selectAll(".bar")
+      .data(waitListPerGrade)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { 
+          console.log(d.grade); 
+          return x(d.grade);
+        })
+        .attr("y", function(d) { 
+          console.log(d.tally);
+          console.log(y(d.tally));
+          return y(d.tally); 
+        })
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { 
+          console.log(height);
+          return height - y(d.tally); 
+        });
+    g.append("text")
+      .attr("x", width / 2)
+      .attr("y", 455)
+      .style("text-anchor", "middle")
+      .text("Grade Level");
+    g.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (margin.left))
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Number of Students");
+  });
+</script>
+<body>
+</html>
