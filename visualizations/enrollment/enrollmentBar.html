@@ -1,0 +1,40 @@
+<html>
+<head>
+  <script src='../../lib/d3.js'></script>
+  <script src='../../lib/lodash.js'></script>
+</head>
+<style>
+
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis--x path {
+  display: none;
+}
+
+.hover-text {
+  fill: white;
+}
+
+#schoolSelector {
+  font-size: 20px;
+}
+
+</style>
+<body>
+  <h2>
+    Charter School Enrollment 2017-2018 per Grade Level
+  </h2>
+  <svg width="960" height="500"></svg>
+  <select id="schoolSelector">
+    <option value='all'>All Charter Schools</option>
+  </select>
+<script src="./enrollmentBar.js">
+</script>
+<body>
+</html>
