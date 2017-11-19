@@ -1,0 +1,562 @@
+[
+  {
+    "name": "Abby Kelley Foster Charter Public School",
+    "enrollment": 1426,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 542
+  },
+  {
+    "name": "Academy Of the Pacific Rim Charter Public School",
+    "enrollment": 540,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 457
+  },
+  {
+    "name": "Advanced Math and Science Academy Charter School",
+    "enrollment": 966,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 307
+  },
+  {
+    "name": "Alma del Mar Charter School",
+    "enrollment": 420,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 465
+  },
+  {
+    "name": "Argosy Collegiate Charter School",
+    "enrollment": 410,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 89
+  },
+  {
+    "name": "Atlantis Charter School",
+    "enrollment": "1273",
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 442
+  },
+  {
+    "name": "Barnstable Community Horace Mann Charter Public School",
+    "enrollment": 320,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 9
+  },
+  {
+    "name": "Baystate Academy Charter Public School",
+    "enrollment": 468,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 114
+  },
+  {
+    "name": "Benjamin Banneker Charter Public School",
+    "enrollment": 350,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 232
+  },
+  {
+    "name": "Benjamin Franklin Classical Charter Public School",
+    "enrollment": 452,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 344
+  },
+  {
+    "name": "Bentley Academy Charter School",
+    "enrollment": 325,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 15
+  },
+  {
+    "name": "Boston Collegiate Charter School",
+    "enrollment": 700,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 1918
+  },
+  {
+    "name": "Boston Day and Evening Academy Charter School",
+    "enrollment": 405,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 64
+  },
+  {
+    "name": "Boston Green Academy Horace Mann Charter School",
+    "enrollment": 533,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 485
+  },
+  {
+    "name": "Boston Preparatory Charter Public School",
+    "enrollment": 466,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 762
+  },
+  {
+    "name": "Boston Renaissance Charter Public School",
+    "enrollment": 944,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 889
+  },
+  {
+    "name": "Bridge Boston Charter School",
+    "enrollment": 312,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 1705
+  },
+  {
+    "name": "Brooke Charter School",
+    "enrollment": 1792,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": "2230"
+  },
+  {
+    "name": "Cape Cod Lighthouse Charter School",
+    "enrollment": 243,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 173
+  },
+  {
+    "name": "Christa McAuliffe Charter Public School",
+    "enrollment": 396,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 93
+  },
+  {
+    "name": "Codman Academy Charter Public School",
+    "enrollment": 345,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": "1247"
+  },
+  {
+    "name": "Community Charter School of Cambridge",
+    "enrollment": 394,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 311
+  },
+  {
+    "name": "Community Day Charter Public School - Gateway",
+    "enrollment": 320,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 468
+  },
+  {
+    "name": "Community Day Charter Public School - Prospect",
+    "enrollment": 400,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 547
+  },
+  {
+    "name": "Community Day Charter Public School - R. Kingman Webster",
+    "enrollment": 320,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 476
+  },
+  {
+    "name": "Conservatory Lab Charter School",
+    "enrollment": 444,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 296
+  },
+  {
+    "name": "Dudley Street Neighborhood Charter School",
+    "enrollment": 308,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 738
+  },
+  {
+    "name": "Edward M. Kennedy Academy for Health Careers (Horace Mann Charter School)",
+    "enrollment": 370,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 235
+  },
+  {
+    "name": "Excel Academy Charter School",
+    "enrollment": 1141,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 582
+  },
+  {
+    "name": "Four Rivers Charter Public School",
+    "enrollment": 220,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 50
+  },
+  {
+    "name": "Foxborough Regional Charter School",
+    "enrollment": 1480,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 2154
+  },
+  {
+    "name": "Francis W. Parker Charter Essential School",
+    "enrollment": 400,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 69
+  },
+  {
+    "name": "Global Learning Charter Public School",
+    "enrollment": 500,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 274
+  },
+  {
+    "name": "Hampden Charter School of Science",
+    "enrollment": 506,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 239
+  },
+  {
+    "name": "Helen Y. Davis Leadership Academy Charter Public School",
+    "enrollment": 216,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 105
+  },
+  {
+    "name": "Hill View Montessori Charter Public School",
+    "enrollment": 306,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 112
+  },
+  {
+    "name": "Hilltown Cooperative Charter Public School",
+    "enrollment": 218,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 236
+  },
+  {
+    "name": "Holyoke Community Charter School",
+    "enrollment": 702,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 341
+  },
+  {
+    "name": "Innovation Academy Charter School",
+    "enrollment": 800,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 210
+  },
+  {
+    "name": "KIPP Academy Boston Charter School",
+    "enrollment": 567,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 487
+  },
+  {
+    "name": "KIPP Academy Lynn Charter School",
+    "enrollment": 1367,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 886
+  },
+  {
+    "name": "Lawrence Family Development Charter School",
+    "enrollment": 740,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 550
+  },
+  {
+    "name": "Lowell Community Charter Public School",
+    "enrollment": 800,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 241
+  },
+  {
+    "name": "Marblehead Community Charter Public School",
+    "enrollment": 230,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 160
+  },
+  {
+    "name": "Martha's Vineyard Charter School",
+    "enrollment": 180,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 10
+  },
+  {
+    "name": "Martin Luther King Jr. Charter School of Excellence",
+    "enrollment": 360,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 110
+  },
+  {
+    "name": "MATCH Charter Public School",
+    "enrollment": 1240,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 1784
+  },
+  {
+    "name": "Mystic Valley Regional Charter School",
+    "enrollment": 1612,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 3597
+  },
+  {
+    "name": "Neighborhood House Charter School",
+    "enrollment": 566,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 817
+  },
+  {
+    "name": "New Heights Charter School of Brockton",
+    "enrollment": 420,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 172
+  },
+  {
+    "name": "Pioneer Charter School of Science",
+    "enrollment": 690,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 733
+  },
+  {
+    "name": "Pioneer Charter School of Science II (PCSS-II)",
+    "enrollment": 360,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 276
+  },
+  {
+    "name": "Pioneer Valley Chinese Immersion Charter School",
+    "enrollment": 539,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 109
+  },
+  {
+    "name": "Pioneer Valley Performing Arts Charter Public School",
+    "enrollment": 400,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 216
+  },
+  {
+    "name": "Prospect Hill Academy Charter School",
+    "enrollment": 1190,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 599
+  },
+  {
+    "name": "Rising Tide Charter Public School",
+    "enrollment": 700,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 251
+  },
+  {
+    "name": "River Valley Charter School",
+    "enrollment": 288,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 617
+  },
+  {
+    "name": "Roxbury Preparatory Charter School",
+    "enrollment": 1565,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 105
+  },
+  {
+    "name": "Sabis International Charter School",
+    "enrollment": 1574,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 2640
+  },
+  {
+    "name": "Salem Academy Charter School",
+    "enrollment": 480,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 202
+  },
+  {
+    "name": "Seven Hills Charter School",
+    "enrollment": 666,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 443
+  },
+  {
+    "name": "Silver Hill Horace Mann Charter School",
+    "enrollment": 580,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 55
+  },
+  {
+    "name": "Sizer School: A North Central Charter Essential School",
+    "enrollment": 392,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 69
+  },
+  {
+    "name": "South Shore Charter Public School",
+    "enrollment": 942,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 767
+  },
+  {
+    "name": "Springfield Preparatory Charter School",
+    "enrollment": 216,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 182
+  },
+  {
+    "name": "Sturgis Charter Public School",
+    "enrollment": 824,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 511
+  },
+  {
+    "name": "UP Academy Charter School of Boston",
+    "enrollment": 513,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 46
+  },
+  {
+    "name": "UP Academy Charter School of Dorchester",
+    "enrollment": 767,
+    "fiscalYear": 2017,
+    "type": "HM",
+    "waitlist": 1173
+  },
+  {
+    "name": "Veritas Preparatory Charter School",
+    "enrollment": 324,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": 69
+  },
+  {
+    "name": "Berkshire Arts and Technology Charter Public School",
+    "enrollment": 363,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "City on a Hill Charter Public School Circuit Street",
+    "enrollment": 280,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "City on a Hill Charter Public School Dudley Square",
+    "enrollment": 280,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "City on a Hill Charter Public School New Bedford",
+    "enrollment": 230,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "Collegiate Charter School of Lowell",
+    "enrollment": 756,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "Libertas Academy Charter School",
+    "enrollment": 90,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "Lowell Middlesex Academy Charter School",
+    "enrollment": 150,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "Old Sturbridge Academy Charter Public School",
+    "enrollment": 160,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "Paulo Freire Social Justice Charter School",
+    "enrollment": 340,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "Phoenix Academy Public Charter High School Springfield",
+    "enrollment": 215,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  },
+  {
+    "name": "Phoenix Charter Academy",
+    "enrollment": 215,
+    "fiscalYear": 2017,
+    "type": "CW",
+    "waitlist": null
+  }
+]
