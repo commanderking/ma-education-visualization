@@ -1,5 +1,7 @@
 <html>
 <head>
+  <link rel="stylesheet" href="../../lib/bootstrap.css" />
+
   <script src='../../lib/d3.js'></script>
   <script src='../../lib/lodash.js'></script>
 </head>
@@ -30,12 +32,23 @@
   text-align: center;
 }
 
+.btn-group {
+  text-align: center;
+  display: block;
+}
+
 </style>
 <body>
   <div class="dataWrapper">
     <h2>
       Boston Public School Discipline Data (Charters and District)
     </h2>
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button type="button" class="btn btn-secondary">Discipline Overview</button>
+      <button type="button" class="btn btn-secondary">Breakdown by Discipline Type</button>
+      <button type="button" class="btn btn-secondary">Breakdown by Race</button>
+      <button type="button" class="btn btn-secondary">Discipline Over Time</button>
+    </div>
     <svg width="960" height="500"></svg>
   </div>
 <script src="./index.js">

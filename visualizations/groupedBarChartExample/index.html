@@ -41,21 +41,28 @@ d3.csv("data.csv", function(d, i, columns) {
   x1.domain(keys).rangeRound([0, x0.bandwidth()]);
   y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
 
-  console.log(data);
   g.append("g")
     .selectAll("g")
     .data(data)
     .enter().append("g")
       .attr("transform", function(d) { return "translate(" + x0(d.State) + ",0)"; })
     .selectAll("rect")
-    .data(function(d) { return keys.map(function(key) {
-      console.log(d); 
-      console.log({key: key, value: d[key]});
-      return {key: key, value: d[key]}; }); 
+    .data(function(d) { 
+      const retval = keys.map(function(key) {
+        // console.log({key: key, value: d[key]});
+        return {key: key, value: d[key]}; 
+      });
+      return retval;
     })
     .enter().append("rect")
-      .attr("x", function(d) { return x1(d.key); })
-      .attr("y", function(d) { return y(d.value); })
+      .attr("x", function(d) { 
+        console.log(d.key);
+        console.log(x1(d.key));
+        return x1(d.key); 
+      })
+      .attr("y", function(d) { 
+        return y(d.value); 
+      })
       .attr("width", x1.bandwidth())
       .attr("height", function(d) { return height - y(d.value); })
       .attr("fill", function(d) { 
