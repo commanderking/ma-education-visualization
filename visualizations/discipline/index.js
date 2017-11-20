@@ -1,13 +1,13 @@
 (() => {
     const dataSource = "data.json";
     const disciplineConsts = {
-      STUDENTS: 'students',
+      STUDENTS: 'Students',
       STUDENTS_DISCIPLINED: 'Students Disciplined',
-      IN_SCHOOL_SUSPENSION: 'inSchoolSuspension',
-      OUT_SCHOOL_SUSPENSION: 'outSchoolSuspension',
-      EXPULSION: 'expulsion',
-      REMOVED_TO_ALTERNATE: 'removedToAlternate',
-      EMERGENCY_REMOVAL: 'emergencyRemoval',
+      IN_SCHOOL_SUSPENSION: '# In-School Suspension',
+      OUT_SCHOOL_SUSPENSION: '# Out-of-School Suspension',
+      EXPULSION: '# Expulsion',
+      REMOVED_TO_ALTERNATE: '# Removed to Alternate Setting',
+      EMERGENCY_REMOVAL: '# Emergency Removal',
     }
 
     const keyConstants = {
@@ -37,22 +37,24 @@
     let model = {};
 
     const filterByDistrictType = (data, schoolType) => {
-      const charterSchools = data.filter((school) => {
-        return school.schoolType === schoolType;
+      const schools = data.filter((school) => {
+        return school["School Type"] === schoolType;
       });
 
-      return charterSchools;
+      console.log('filterByDistrictType', schoolType);
+      console.log(schools);
+      return schools;
     }
 
     const filterByYear = (data, year) => {
       return data.filter((district) => {
-        return district.fiscalYear === year;
+        return district["Year"] === year;
       });
     }
 
     const filterByStudentType = (data, studentType) => {
       return data.filter((district) => {
-        return district.studentType === studentType;
+        return district["Subgroup"] === studentType;
       })
     }
 
@@ -86,8 +88,8 @@
     const createCategoryData = (charterData, traditionalData, category) => {
       return {
         name: category,
-        [keyConstants.CHARTER_SCHOOLS]: charterData[category] / charterData.students,
-        [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData.students
+        [keyConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[disciplineConsts.STUDENTS],
+        [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[disciplineConsts.STUDENTS]
       }
     }
 
@@ -126,6 +128,18 @@
               [colorMap[keyConstants.TRADITIONAL_PUBLIC_SCHOOLS], colorMap[keyConstants.CHARTER_SCHOOLS]]);
       },
 
+      renderAxes: () => {
+        g.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x0));
+
+        g.append("g")
+            .attr("class", "axis axis--y")
+            .call(d3.axisLeft(y).ticks(5, '%'))
+
+      },
+
       renderLegend: () => {
         const legend = g.append("g")
             .attr("font-family", "sans-serif")
@@ -162,51 +176,10 @@
             .text("% Students Disciplined");
       },
 
-      renderData: (data) => {
-        // Set up d3 scales
-        view.initializeSvg();
-
-        view.setScales();
-
-        // Manipulating data to get 2015 all student data
-        const allStudentsData = filterByStudentType(data, 'all');
-
-        const studentFifteenData = filterByYear(data, 2015);
-        const charterSchools = filterByDistrictType(studentFifteenData, 'Charter');
-        const charterSummaryData = sumCharterSchools(charterSchools);
-        const publicDistrictSummaryData = filterByDistrictType(studentFifteenData, 'Traditional Public');
-
-        const processedData = createProcessedData(charterSummaryData, publicDistrictSummaryData[0], [disciplineConsts.STUDENTS_DISCIPLINED]);
-
-
-        const tempData = {
-          "categoryName": "suspensions",
-          [keyConstants.CHARTER_SCHOOLS]: 0.10,
-          [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS] : 0.15
-        }
-
-        // Start plotting
-
-        x0.domain(processedData.map(function(category) { 
-          return category.name; 
-        }));
-
-        x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-
-        y.domain([0, .25]);
-
-        g.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x0));
-
-        g.append("g")
-            .attr("class", "axis axis--y")
-            .call(d3.axisLeft(y).ticks(5, '%'))
-
+      renderBars: (data) => {
         g.append("g")
           .selectAll("g")
-          .data(processedData)
+          .data(data)
           .enter().append("g")
             .attr("transform", function(d) { 
               return "translate(" + x0(d.name) + ",0)"; 
@@ -230,9 +203,30 @@
             .attr("fill", function(d) { 
               return z(d.key); 
             });
+      },
 
-        view.renderLegend();
+      renderData: (data) => {
+        console.log(data)
+        view.initializeSvg();
+        view.setScales();
+
+        // Manipulating data to get 2015 all student data
+        const allStudentsData = filterByStudentType(data, 'All');
+        const studentFifteenData = filterByYear(allStudentsData, "2015-16");
+        const charterSchools = filterByDistrictType(studentFifteenData, 'Charter');
+        const charterSummaryData = sumCharterSchools(charterSchools);
+        const publicDistrictSummaryData = filterByDistrictType(studentFifteenData, 'Traditional District');
+        const processedData = createProcessedData(charterSummaryData, publicDistrictSummaryData[0], [disciplineConsts.STUDENTS_DISCIPLINED]);
+
+        // Creates label for category on x-axis
+        x0.domain(processedData.map(category => category.name));
+        x1.domain(keys).rangeRound([0, x0.bandwidth()]);
+        y.domain([0, .25]);
+
+        view.renderAxes();
         view.renderYLabel();
+        view.renderBars(processedData);
+        view.renderLegend();
       }
     }
 
