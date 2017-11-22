@@ -10,6 +10,12 @@
       EMERGENCY_REMOVAL: '# Emergency Removal',
     }
 
+    const filterViews = {
+      OVERVIEW: 'overview',
+      BREAKDOWN_DISCIPLINE: 'breakdownByDiscipline',
+      BREAKDOWN_RACE: 'breakdownByRace'
+    }
+
     const keyConstants = {
       CHARTER_SCHOOLS: "Charter Schools",
       TRADITIONAL_PUBLIC_SCHOOLS: "Traditional Public",
@@ -27,23 +33,16 @@
     let z;
     let g;
     let svg;
-    let schoolSelectorWrapper;
-    let allSchoolNames = [];
     let width;
     let height;
-    let currentCategories = ["discipline"];
     let keys = [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS, keyConstants.CHARTER_SCHOOLS]
 
-    let model = {};
+    let loadedData = [];
 
     const filterByDistrictType = (data, schoolType) => {
-      const schools = data.filter((school) => {
+      return data.filter((school) => {
         return school["School Type"] === schoolType;
       });
-
-      console.log('filterByDistrictType', schoolType);
-      console.log(schools);
-      return schools;
     }
 
     const filterByYear = (data, year) => {
@@ -56,6 +55,35 @@
       return data.filter((district) => {
         return district["Subgroup"] === studentType;
       })
+    }
+
+    // Based on action passed in, will filter
+    const filterController = (action, payload, data) => {
+      switch(action) {
+        case filterViews.OVERVIEW:
+          return filterForOverview(payload, data);
+        case filterViews.BREAKDOWN_DISCIPLINE:
+          return filterForBreakdownDiscipline(data)
+        case filterViews.BREAKDOWN_RACE:
+          return filterForBreakdownRace(data)
+        default:
+          return [];
+      }
+    }
+
+    const filterForOverview = (payload, data) => {
+        // Manipulating data to get 2015 all student data
+        const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
+        const studentFifteenData = filterByYear(allStudentsData, payload.year);
+        const charterSchools = filterByDistrictType(studentFifteenData, 'Charter');
+        const charterSummaryData = sumCharterSchools(charterSchools);
+        const publicDistrictSummaryData = filterByDistrictType(studentFifteenData, 'Traditional District');
+        const processedData = createProcessedData(
+          charterSummaryData, 
+          publicDistrictSummaryData[0], 
+          payload.disciplineTypes
+        );
+        return processedData;
     }
 
     // Takes all charter school entries, sums up data, and creates new object with select properties summed
@@ -102,8 +130,66 @@
       return processedData;
     };
 
+    const renderOverviewData = () => {
+      view.renderData(
+        filterViews.OVERVIEW, 
+        {
+          studentSubgroup: 'All',
+          year: '2015-16',
+          disciplineTypes: [disciplineConsts.STUDENTS_DISCIPLINED]
+        },
+        loadedData
+      );
+    }
+    const renderBreakdownData = () => {
+      d3.json(dataSource, view.renderData.bind(this, filterViews.OVERVIEW, {
+        studentSubgroup: 'All',
+        year: '2015-16',
+        disciplineTypes: [ 
+          disciplineConsts.STUDENTS_DISCIPLINED, 
+          disciplineConsts.IN_SCHOOL_SUSPENSION, 
+          disciplineConsts.OUT_SCHOOL_SUSPENSION,
+          disciplineConsts.EXPULSION,
+          disciplineConsts.EMERGENCY_REMOVAL
+        ]
+      }));
+    }
+
     // SVG related additions
     const view = {
+      renderButtonGroups: () => {
+        const buttonGroupWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
+        console.log(buttonGroupWrapper);
+        if (buttonGroupWrapper) {
+          const buttonNames = [
+            { 
+              name: 'Overview', 
+              onClick: renderOverviewData
+            }, 
+            {
+              name: "Breakdown by Discipline Type",
+              onClick: renderBreakdownData
+            }
+          ];
+
+          const buttonGroup = document.createElement('div');
+          buttonGroup.className = 'btn-group';
+          buttonGroup.setAttribute('role', 'group');
+          buttonGroup.setAttribute('aria-label', 'Basic example');
+
+          buttonGroupWrapper.append(buttonGroup);
+
+          buttonNames.forEach((option) => {
+           const button = document.createElement('button');
+            button.className = 'btn btn-secondary';
+            button.setAttribute('type', 'button');
+            button.innerHTML = option.name;
+            button.addEventListener('click', option.onClick);
+            buttonGroup.append(button);
+          });
+        }
+      },
+
       initializeSvg: () => {
           svg = d3.select("svg"),
           margin = {top: 20, right: 20, bottom: 30, left: 100},
@@ -115,7 +201,7 @@
       setScales: () => {
         x0 = d3.scaleBand()
             .rangeRound([50, width - 150])
-            .paddingInner(0.01);
+            .paddingInner(0.05);
 
         x1 = d3.scaleBand()
             .padding(0);
@@ -177,13 +263,21 @@
       },
 
       renderBars: (data) => {
-        g.append("g")
+        console.log('rendering bars');
+        const gWrapper = g.append("g")
+          .attr('class', 'gWrapper')
           .selectAll("g")
-          .data(data)
-          .enter().append("g")
-            .attr("transform", function(d) { 
-              return "translate(" + x0(d.name) + ",0)"; 
-            })
+          .data(data, (d) => {
+            return d.name;
+          });
+
+        gWrapper.enter().append("g")
+          .attr("transform", function(d) { 
+            console.log(d);
+            console.log(d.name);
+            return "translate(" + x0(d.name) + ",0)"; 
+          })
+          .attr('class', 'barGroup')
           .selectAll("rect")
           .data(function(d) { 
             const retval = keys.map(function(key) { 
@@ -203,25 +297,43 @@
             .attr("fill", function(d) { 
               return z(d.key); 
             });
+        console.log(gWrapper);
+        gWrapper.exit().remove();
       },
 
-      renderData: (data) => {
-        console.log(data)
+      /** 
+        * Data Action allows for filtering for particular slices of data
+        */
+      renderData: (filterView, payload, data) => {
+        console.log('rendering data');
+        if (!loadedData.length) {
+          loadedData = data;
+        }
+
+        const processedData = filterController(filterView, payload, data);
+        console.log(processedData);
+
+        x0.domain(processedData.map(category => category.name));
+        x1.domain(keys).rangeRound([0, x0.bandwidth()]);
+        y.domain([0, 0.30]);
+
+        view.renderBars(processedData);
+      },
+      initialize: (filterView, payload, data) => {
+        if (!loadedData.length) {
+          loadedData = data;
+        }
+
         view.initializeSvg();
         view.setScales();
 
-        // Manipulating data to get 2015 all student data
-        const allStudentsData = filterByStudentType(data, 'All');
-        const studentFifteenData = filterByYear(allStudentsData, "2015-16");
-        const charterSchools = filterByDistrictType(studentFifteenData, 'Charter');
-        const charterSummaryData = sumCharterSchools(charterSchools);
-        const publicDistrictSummaryData = filterByDistrictType(studentFifteenData, 'Traditional District');
-        const processedData = createProcessedData(charterSummaryData, publicDistrictSummaryData[0], [disciplineConsts.STUDENTS_DISCIPLINED]);
+        const processedData = filterController(filterView, payload, data);
 
+        // filterForBreakdownRace(data);
         // Creates label for category on x-axis
         x0.domain(processedData.map(category => category.name));
         x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-        y.domain([0, .25]);
+        y.domain([0, 0.30]);
 
         view.renderAxes();
         view.renderYLabel();
@@ -230,10 +342,14 @@
       }
     }
 
-    // Append legend
+    view.renderButtonGroups();
 
-    // Initialize table with all charter schools
-    // @params (this, schoolName)
-    d3.json(dataSource, view.renderData);
+    d3.json(dataSource, view.initialize.bind(this, filterViews.OVERVIEW, {
+      studentSubgroup: 'Black',
+      year: '2015-16',
+      disciplineTypes: [ 
+        disciplineConsts.STUDENTS_DISCIPLINED
+      ]
+    }));
       
 })();
