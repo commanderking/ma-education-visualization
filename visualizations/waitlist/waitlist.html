@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+    <head>
+        <!--demonstration of using the svg 'use' element to create a pictogram-->
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+        <script src="//cdn.jsdelivr.net/jquery.ui.touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+        <style type="text/css">
+               
+            #sliderDiv  {
+                margin:10px;
+                margin-top:30px;
+                height:15px;
+                width:300px;
+            }
+            
+            svg {
+                overflow:none;
+                padding:10px;
+                float:left;
+                width:400px;
+                height:400px;
+            }
+            
+            text    {
+                fill:#bb6d82;
+                text-anchor:left;
+                font-size:12px;
+                font-family:sans-serif,Helvetica,Arial;
+                font-weight:bold;
+            }
+            
+            .iconPlain  {
+                fill:#a7a59b;   
+            }
+            
+            .iconSelected  {
+                fill:#bb6d82;   
+            }
+            
+            rect    {
+                fill:#fff1e0;   
+            }
+        
+        </style>
+ 
+    </head>
+ 
+    <body>
+ 
+        <script>
+            
+            //placeholder div for jquery slider
+            d3.select("body").append("div").attr("id","sliderDiv");
+            
+            //create svg element
+            var svgDoc=d3.select("body").append("svg").attr("viewBox","0 0 100 100");
+            
+             //define an icon store it in svg <defs> elements as a reusable component - this geometry can be generated from Inkscape, Illustrator or similar
+            svgDoc.append("defs")
+                .append("g")
+                .attr("id","iconCustom")
+                .append("path")
+                        .attr("d","M3.5,2H2.7C3,1.8,3.3,1.5,3.3,1.1c0-0.6-0.4-1-1-1c-0.6,0-1,0.4-1,1c0,0.4,0.2,0.7,0.6,0.9H1.1C0.7,2,0.4,2.3,0.4,2.6v1.9c0,0.3,0.3,0.6,0.6,0.6h0.2c0,0,0,0.1,0,0.1v1.9c0,0.3,0.2,0.6,0.3,0.6h1.3c0.2,0,0.3-0.3,0.3-0.6V5.3c0,0,0-0.1,0-0.1h0.2c0.3,0,0.6-0.3,0.6-0.6V2.6C4.1,2.3,3.8,2,3.5,2z")
+                .classed("iconPlain",true);
+            
+            
+            //background rectangle
+            svgDoc.append("rect").attr("width",100).attr("height",100);
+            
+            //specify the number of columns and rows for pictogram layout
+            var numCols = 2;
+            var numRows = 2;
+            
+            //padding for the grid
+            var xPadding = 10;
+            var yPadding = 15;
+            
+            //horizontal and vertical spacing between the icons
+            var hBuffer = 8;
+            var wBuffer = 8;
+            
+            //generate a d3 range for the total number of required elements
+            var myIndex=d3.range(numCols*numRows);
+            
+            //text element to display number of icons highlighted
+            svgDoc.append("text")
+                .attr("id","txtValue")
+                .attr("x",xPadding)
+                .attr("y",yPadding)
+                .attr("dy",-3)
+                .text("0");
+ 
+            //create group element and create an svg <use> element for each icon
+            svgDoc.append("g")
+                .attr("id","pictoLayer")
+                .selectAll("use")
+                .data(myIndex)
+                .enter()
+                .append("g")
+                .attr("id",function(d) {
+                    return "icon"+d
+                })
+                .append("path")
+                        .attr("d","M3.5,2H2.7C3,1.8,3.3,1.5,3.3,1.1c0-0.6-0.4-1-1-1c-0.6,0-1,0.4-1,1c0,0.4,0.2,0.7,0.6,0.9H1.1C0.7,2,0.4,2.3,0.4,2.6v1.9c0,0.3,0.3,0.6,0.6,0.6h0.2c0,0,0,0.1,0,0.1v1.9c0,0.3,0.2,0.6,0.3,0.6h1.3c0.2,0,0.3-0.3,0.3-0.6V5.3c0,0,0-0.1,0-0.1h0.2c0.3,0,0.6-0.3,0.6-0.6V2.6C4.1,2.3,3.8,2,3.5,2z")
+                .classed("iconPlain",true)
+                .attr("x", function(d) {
+                    return d*50;
+                });
+
+/*
+                    .attr("id",function(d)    {
+                        return "icon"+d;
+                    })
+                    .attr("x",function(d) {
+                        var remainder=d % numCols;//calculates the x position (column number) using modulus
+                        return xPadding+(remainder*wBuffer);//apply the buffer and return value
+                    })
+                      .attr("y",function(d) {
+                        var whole=Math.floor(d/numCols)//calculates the y position (row number)
+                        return yPadding+(whole*hBuffer);//apply the buffer and return the value
+                    })
+                    .classed("iconPlain",true);
+*/
+            
+        </script>
+    </body>
+</html>

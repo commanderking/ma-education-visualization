@@ -196,10 +196,6 @@
       cleanup() {
         const svgWrapper = document.querySelector(".svgWrapper");
         svgWrapper.innerHTML = '';
-      },
-
-      renderSchoolSelect() {
-
       }
     }
 
