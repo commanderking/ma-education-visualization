@@ -1,5 +1,6 @@
 (() => {
     const dataSource = "data.json";
+
     const disciplineConsts = {
       STUDENTS: 'Students',
       STUDENTS_DISCIPLINED: 'Students Disciplined',
@@ -18,19 +19,27 @@
     const filterViews = {
       OVERVIEW: 'overview',
       BREAKDOWN_DISCIPLINE: 'breakdownByDiscipline',
-      BREAKDOWN_RACE: 'breakdownByRace'
+      BREAKDOWN_RACE: 'breakdownByRace',
+      TRENDS: 'trends'
     }
 
-    const keyConstants = {
-      CHARTER_SCHOOLS: "Charter Schools",
-      TRADITIONAL_PUBLIC_SCHOOLS: "Traditional Public",
+    const districtConstants = {
+      CHARTER_SCHOOLS: "Charter",
+      TRADITIONAL_PUBLIC_SCHOOLS: "Traditional District",
+    }
+
+    const filterConstants = {
+      YEAR: 'Year',
+      SCHOOL_TYPE: 'School Type',
+      SUBGROUP: 'Subgroup'
     }
 
     const colorMap = {
-      [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS]: "#98abc5",
-      [keyConstants.CHARTER_SCHOOLS]: "#8a89a6"
+      [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: "#98abc5",
+      [districtConstants.CHARTER_SCHOOLS]: "#8a89a6"
     }
 
+    // Svg related Constants
     const svgMargins = {top: 20, right: 20, bottom: 70, left: 80};
     let x0;
     let x1;
@@ -40,30 +49,34 @@
     let svg;
     let width;
     let height;
-    let keys = [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS, keyConstants.CHARTER_SCHOOLS]
+    let keys = [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS, districtConstants.CHARTER_SCHOOLS]
 
     let loadedData = [];
 
+    // TODO: Move "School Type" to ENUM
     const filterByDistrictType = (data, schoolType) => {
       return data.filter((school) => {
         return school["School Type"] === schoolType;
       });
     }
 
+    // TODO: Move filterConstants.YEAR to ENUM
     const filterByYear = (data, year) => {
       return data.filter((district) => {
-        return district["Year"] === year;
+        return district[filterConstants.YEAR] === year;
       });
     }
 
+    // TODO: Move "Subgroup" to ENUM
     const filterByStudentType = (data, studentType) => {
       return data.filter((district) => {
-        return district["Subgroup"] === studentType;
+        return district[filterConstants.SUBGROUP] === studentType;
       })
     }
 
     // Based on action passed in, will filter
     const filterController = (action, payload, data) => {
+      console.log(action);
       switch(action) {
         case filterViews.OVERVIEW:
           return filterForOverview(payload, data);
@@ -71,9 +84,39 @@
           return filterForBreakdownDiscipline(data)
         case filterViews.BREAKDOWN_RACE:
           return filterForRaceView(payload, data)
+        case filterViews.TRENDS:
+          return filterForTrends(payload, data)
         default:
           return [];
       }
+    }
+
+    filterForTrends = (payload, data) => {
+      console.log('filtering for trends');
+      const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
+
+      const years = ['2012-13', '2013-14', '2014-15', '2015-16'];
+
+      const districtsGroupedByYear = years.map((year) => {
+        return allStudentsData.filter((district) => {
+          return district[filterConstants.YEAR] === year;
+        });
+      })
+
+      console.log(districtsGroupedByYear);
+
+      const yearlySummary = districtsGroupedByYear.map((districtsInYear) => {
+        const charterSchools = filterByDistrictType(districtsInYear, districtConstants.CHARTER_SCHOOLS);
+        const charterSummaryData = sumCharterSchools(charterSchools);
+        const publicDistrictSummaryData = filterByDistrictType(districtsInYear, districtConstants.TRADITIONAL_PUBLIC_SCHOOLS)[0];
+
+        return {
+          name: districtsInYear[0][filterConstants.YEAR],
+          [districtConstants.CHARTER_SCHOOLS]: charterSummaryData[disciplineConsts.STUDENTS_DISCIPLINED] / charterSummaryData[disciplineConsts.STUDENTS],
+          [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: publicDistrictSummaryData[disciplineConsts.STUDENTS_DISCIPLINED] / publicDistrictSummaryData[disciplineConsts.STUDENTS]
+        };
+      });
+      return yearlySummary;
     }
 
     const filterForOverview = (payload, data) => {
@@ -93,8 +136,6 @@
 
     // Race view shows general discipline statistics
     const filterForRaceView = (payload, data) => {
-      console.log('data', data);
-      console.log('year', payload.year);
       const studentDataForYear = filterByYear(data, payload.year);
 
       const blackStudentsData = formatCharterPublicDataForRace(studentDataForYear, raceConsts.BLACK);
@@ -112,7 +153,6 @@
 
 
       const charterPublicBreakdownForRace = createRaceVerticalData(charterBlackStudentData, publicBlackStudentData, race);
-      console.log('charterPublicBreakdownForRace', charterPublicBreakdownForRace);
       return charterPublicBreakdownForRace;
     }
 
@@ -146,8 +186,8 @@
     const createCategoryData = (charterData, traditionalData, category) => {
       return {
         name: category,
-        [keyConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[disciplineConsts.STUDENTS],
-        [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[disciplineConsts.STUDENTS]
+        [districtConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[disciplineConsts.STUDENTS],
+        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[disciplineConsts.STUDENTS]
       }
     }
 
@@ -167,8 +207,8 @@
     const createRaceVerticalData = (charterData, traditionalData, race) => {
       return {
         name: race,
-        [keyConstants.CHARTER_SCHOOLS]: calculateFractionDisciplined(charterData),
-        [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS]: calculateFractionDisciplined(traditionalData)
+        [districtConstants.CHARTER_SCHOOLS]: calculateFractionDisciplined(charterData),
+        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: calculateFractionDisciplined(traditionalData)
       }
     }
 
@@ -184,24 +224,42 @@
       );
     }
     const renderBreakdownData = () => {
-      d3.json(dataSource, view.renderData.bind(this, filterViews.OVERVIEW, {
-        studentSubgroup: 'All',
-        year: '2015-16',
-        disciplineTypes: [ 
-          disciplineConsts.STUDENTS_DISCIPLINED, 
-          disciplineConsts.IN_SCHOOL_SUSPENSION, 
-          disciplineConsts.OUT_SCHOOL_SUSPENSION,
-          disciplineConsts.EXPULSION,
-          disciplineConsts.EMERGENCY_REMOVAL
-        ]
-      }));
+      view.renderData(
+        filterViews.OVERVIEW,
+        {
+          studentSubgroup: 'All',
+          year: '2015-16',
+          disciplineTypes: [ 
+            disciplineConsts.STUDENTS_DISCIPLINED, 
+            disciplineConsts.IN_SCHOOL_SUSPENSION, 
+            disciplineConsts.OUT_SCHOOL_SUSPENSION,
+            disciplineConsts.EXPULSION,
+            disciplineConsts.EMERGENCY_REMOVAL
+          ]
+        },
+        loadedData
+      );
     }
 
-    // SVG related additions
+    const renderBreakdownDataByRace = () => {
+      view.renderData(
+        filterViews.BREAKDOWN_RACE, 
+        { year: '2015-16' },
+        loadedData 
+      )
+    }
+
+    const renderTrends = () => {
+      view.renderData(
+        filterViews.TRENDS,
+        { studentSubgroup: 'All' },
+        loadedData
+      )
+    }
+
     const view = {
       renderButtonGroups: () => {
         const buttonGroupWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
-        console.log(buttonGroupWrapper);
         if (buttonGroupWrapper) {
           const buttonNames = [
             { 
@@ -209,8 +267,16 @@
               onClick: renderOverviewData
             }, 
             {
-              name: "Breakdown by Discipline Type",
+              name: 'Breakdown by Discipline Type',
               onClick: renderBreakdownData
+            }, 
+            {
+              name: 'Breakdown by Race',
+              onClick: renderBreakdownDataByRace
+            }, 
+            {
+              name: 'Trends Over Time', 
+              onClick: renderTrends
             }
           ];
 
@@ -240,7 +306,7 @@
           g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       },
 
-      setScales: () => {
+      setBarGraphScales: () => {
         x0 = d3.scaleBand()
             .rangeRound([50, width - 150])
             .paddingInner(0.05);
@@ -253,7 +319,7 @@
 
         z = d3.scaleOrdinal()
             .range(
-              [colorMap[keyConstants.TRADITIONAL_PUBLIC_SCHOOLS], colorMap[keyConstants.CHARTER_SCHOOLS]]);
+              [colorMap[districtConstants.TRADITIONAL_PUBLIC_SCHOOLS], colorMap[districtConstants.CHARTER_SCHOOLS]]);
       },
 
       renderAxes: () => {
@@ -274,7 +340,7 @@
             .attr("font-size", 14)
             .attr("text-anchor", "end")
           .selectAll("g")
-          .data(keys.reverse())
+          .data(keys)
           .enter().append("g")
             .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
@@ -305,7 +371,6 @@
       },
 
       renderBars: (data) => {
-        console.log('rendering bars');
         const gWrapper = g.append("g")
           .attr('class', 'gWrapper')
           .selectAll("g")
@@ -315,7 +380,6 @@
 
         gWrapper.enter().append("g")
           .attr("transform", function(d) { 
-            console.log(d);
             console.log(d.name);
             return "translate(" + x0(d.name) + ",0)"; 
           })
@@ -325,12 +389,17 @@
             const retval = keys.map(function(key) { 
               return {key: key, value: d[key]}; 
             });
+            console.log(d);
+            console.log(retval);
             return retval;
           })
           .enter().append("rect")
+            .attr("y", 450)
             .attr("x", function(d) { 
               return x1(d.key); 
             })
+            .transition()
+            .duration(750)
             .attr("y", function(d) { 
               return y(d.value); 
             })
@@ -339,7 +408,6 @@
             .attr("fill", function(d) { 
               return z(d.key); 
             });
-        console.log(gWrapper);
         gWrapper.exit().remove();
       },
 
@@ -347,30 +415,38 @@
         * Data Action allows for filtering for particular slices of data
         */
       renderData: (filterView, payload, data) => {
+        g.selectAll('*').remove();
         console.log('rendering data');
         if (!loadedData.length) {
           loadedData = data;
         }
 
         const processedData = filterController(filterView, payload, data);
-        console.log(processedData);
+        console.log(filterView);
 
-        x0.domain(processedData.map(category => category.name));
-        x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-        y.domain([0, 0.30]);
+        if (filterView === filterView.TRENDS) {
+          console.log('hey, youre in trends');
+        } else {
+          x0.domain(processedData.map(category => category.name));
+          x1.domain(keys).rangeRound([0, x0.bandwidth()]);
+          y.domain([0, 0.30]);
 
-        view.renderBars(processedData);
+          view.renderAxes();
+          view.renderYLabel();
+          view.renderBars(processedData);
+          view.renderLegend();
+        }
+
+
       },
       initialize: (filterView, payload, data) => {
-
-        filterForRaceView(payload, data);
-
+        console.log(filterView);
         if (!loadedData.length) {
           loadedData = data;
         }
 
         view.initializeSvg();
-        view.setScales();
+        view.setBarGraphScales();
 
         const processedData = filterController(filterView, payload, data);
 
@@ -389,19 +465,7 @@
 
     view.renderButtonGroups();
 
-    d3.json(dataSource, view.initialize.bind(this, filterViews.BREAKDOWN_RACE, {
-      year: '2015-16'
+    d3.json(dataSource, view.initialize.bind(this, filterViews.TRENDS, {
+      studentSubgroup: 'All'
     }));
-
-    /* Test for Overview View 
-    d3.json(dataSource, view.initialize.bind(this, filterViews.OVERVIEW, {
-      studentSubgroup: 'Black',
-      year: '2015-16',
-      disciplineTypes: [ 
-        disciplineConsts.STUDENTS_DISCIPLINED
-      ]
-    }));
-    */
-    
-      
 })();
