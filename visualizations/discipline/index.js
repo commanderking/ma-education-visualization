@@ -10,6 +10,11 @@
       EMERGENCY_REMOVAL: '# Emergency Removal',
     }
 
+    const raceConsts = {
+      BLACK: 'Black',
+      HISPANIC: 'Hispanic/Latino'
+    }
+
     const filterViews = {
       OVERVIEW: 'overview',
       BREAKDOWN_DISCIPLINE: 'breakdownByDiscipline',
@@ -65,7 +70,7 @@
         case filterViews.BREAKDOWN_DISCIPLINE:
           return filterForBreakdownDiscipline(data)
         case filterViews.BREAKDOWN_RACE:
-          return filterForBreakdownRace(data)
+          return filterForRaceView(payload, data)
         default:
           return [];
       }
@@ -74,16 +79,41 @@
     const filterForOverview = (payload, data) => {
         // Manipulating data to get 2015 all student data
         const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
-        const studentFifteenData = filterByYear(allStudentsData, payload.year);
-        const charterSchools = filterByDistrictType(studentFifteenData, 'Charter');
+        const studentDataForYear = filterByYear(allStudentsData, payload.year);
+        const charterSchools = filterByDistrictType(studentDataForYear, 'Charter');
         const charterSummaryData = sumCharterSchools(charterSchools);
-        const publicDistrictSummaryData = filterByDistrictType(studentFifteenData, 'Traditional District');
+        const publicDistrictSummaryData = filterByDistrictType(studentDataForYear, 'Traditional District');
         const processedData = createProcessedData(
           charterSummaryData, 
           publicDistrictSummaryData[0], 
           payload.disciplineTypes
         );
         return processedData;
+    }
+
+    // Race view shows general discipline statistics
+    const filterForRaceView = (payload, data) => {
+      console.log('data', data);
+      console.log('year', payload.year);
+      const studentDataForYear = filterByYear(data, payload.year);
+
+      const blackStudentsData = formatCharterPublicDataForRace(studentDataForYear, raceConsts.BLACK);
+      const hispanicStudentsData = formatCharterPublicDataForRace(studentDataForYear, raceConsts.HISPANIC);
+
+      return [blackStudentsData, hispanicStudentsData];
+    }
+
+    const formatCharterPublicDataForRace = (data, race) => {
+      const dataForRace = filterByStudentType(data, race);
+
+      const charterSchools = filterByDistrictType(dataForRace, 'Charter');
+      const charterBlackStudentData = sumCharterSchools(charterSchools);
+      const publicBlackStudentData = filterByDistrictType(dataForRace, 'Traditional District')[0];
+
+
+      const charterPublicBreakdownForRace = createRaceVerticalData(charterBlackStudentData, publicBlackStudentData, race);
+      console.log('charterPublicBreakdownForRace', charterPublicBreakdownForRace);
+      return charterPublicBreakdownForRace;
     }
 
     // Takes all charter school entries, sums up data, and creates new object with select properties summed
@@ -129,6 +159,18 @@
 
       return processedData;
     };
+
+    const calculateFractionDisciplined = (schoolData) => {
+      return schoolData[disciplineConsts.STUDENTS_DISCIPLINED] / schoolData[disciplineConsts.STUDENTS];
+    }
+
+    const createRaceVerticalData = (charterData, traditionalData, race) => {
+      return {
+        name: race,
+        [keyConstants.CHARTER_SCHOOLS]: calculateFractionDisciplined(charterData),
+        [keyConstants.TRADITIONAL_PUBLIC_SCHOOLS]: calculateFractionDisciplined(traditionalData)
+      }
+    }
 
     const renderOverviewData = () => {
       view.renderData(
@@ -320,6 +362,9 @@
         view.renderBars(processedData);
       },
       initialize: (filterView, payload, data) => {
+
+        filterForRaceView(payload, data);
+
         if (!loadedData.length) {
           loadedData = data;
         }
@@ -344,6 +389,11 @@
 
     view.renderButtonGroups();
 
+    d3.json(dataSource, view.initialize.bind(this, filterViews.BREAKDOWN_RACE, {
+      year: '2015-16'
+    }));
+
+    /* Test for Overview View 
     d3.json(dataSource, view.initialize.bind(this, filterViews.OVERVIEW, {
       studentSubgroup: 'Black',
       year: '2015-16',
@@ -351,5 +401,7 @@
         disciplineConsts.STUDENTS_DISCIPLINED
       ]
     }));
+    */
+    
       
 })();
