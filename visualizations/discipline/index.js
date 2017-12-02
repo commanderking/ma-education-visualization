@@ -127,8 +127,8 @@
         const charterSummaryData = sumCharterSchools(charterSchools);
         const publicDistrictSummaryData = filterByDistrictType(studentDataForYear, 'Traditional District');
         const processedData = createProcessedData(
-          charterSummaryData, 
-          publicDistrictSummaryData[0], 
+          charterSummaryData,
+          publicDistrictSummaryData[0],
           payload.disciplineTypes
         );
         return processedData;
@@ -137,23 +137,33 @@
     // Race view shows general discipline statistics
     const filterForRaceView = (payload, data) => {
       const studentDataForYear = filterByYear(data, payload.year);
-
-      const blackStudentsData = formatCharterPublicDataForRace(studentDataForYear, raceConsts.BLACK);
-      const hispanicStudentsData = formatCharterPublicDataForRace(studentDataForYear, raceConsts.HISPANIC);
-
-      return [blackStudentsData, hispanicStudentsData];
+      return payload.races.map(race => {
+        return formatCharterPublicDataForRace(studentDataForYear, race);
+      });
     }
 
     const formatCharterPublicDataForRace = (data, race) => {
+      console.log(race);
       const dataForRace = filterByStudentType(data, race);
 
       const charterSchools = filterByDistrictType(dataForRace, 'Charter');
       const charterBlackStudentData = sumCharterSchools(charterSchools);
       const publicBlackStudentData = filterByDistrictType(dataForRace, 'Traditional District')[0];
 
-
       const charterPublicBreakdownForRace = createRaceVerticalData(charterBlackStudentData, publicBlackStudentData, race);
       return charterPublicBreakdownForRace;
+    }
+
+    const createRaceVerticalData = (charterData, traditionalData, race) => {
+      return {
+        name: race,
+        [districtConstants.CHARTER_SCHOOLS]: calculateFractionDisciplined(charterData),
+        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: calculateFractionDisciplined(traditionalData)
+      }
+    }
+
+    const calculateFractionDisciplined = (schoolData) => {
+      return schoolData[disciplineConsts.STUDENTS_DISCIPLINED] / schoolData[disciplineConsts.STUDENTS];
     }
 
     // Takes all charter school entries, sums up data, and creates new object with select properties summed
@@ -200,21 +210,9 @@
       return processedData;
     };
 
-    const calculateFractionDisciplined = (schoolData) => {
-      return schoolData[disciplineConsts.STUDENTS_DISCIPLINED] / schoolData[disciplineConsts.STUDENTS];
-    }
-
-    const createRaceVerticalData = (charterData, traditionalData, race) => {
-      return {
-        name: race,
-        [districtConstants.CHARTER_SCHOOLS]: calculateFractionDisciplined(charterData),
-        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: calculateFractionDisciplined(traditionalData)
-      }
-    }
-
     const renderOverviewData = () => {
       view.renderData(
-        filterViews.OVERVIEW, 
+        filterViews.OVERVIEW,
         {
           studentSubgroup: 'All',
           year: '2015-16',
@@ -229,9 +227,9 @@
         {
           studentSubgroup: 'All',
           year: '2015-16',
-          disciplineTypes: [ 
-            disciplineConsts.STUDENTS_DISCIPLINED, 
-            disciplineConsts.IN_SCHOOL_SUSPENSION, 
+          disciplineTypes: [
+            disciplineConsts.STUDENTS_DISCIPLINED,
+            disciplineConsts.IN_SCHOOL_SUSPENSION,
             disciplineConsts.OUT_SCHOOL_SUSPENSION,
             disciplineConsts.EXPULSION,
             disciplineConsts.EMERGENCY_REMOVAL
@@ -243,9 +241,11 @@
 
     const renderBreakdownDataByRace = () => {
       view.renderData(
-        filterViews.BREAKDOWN_RACE, 
-        { year: '2015-16' },
-        loadedData 
+        filterViews.BREAKDOWN_RACE,
+        { year: '2015-16',
+          races: [raceConsts.BLACK, raceConsts.HISPANIC]
+        },
+        loadedData
       )
     }
 
@@ -262,20 +262,20 @@
         const buttonGroupWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
         if (buttonGroupWrapper) {
           const buttonNames = [
-            { 
-              name: 'Overview', 
+            {
+              name: 'Overview',
               onClick: renderOverviewData
-            }, 
+            },
             {
               name: 'Breakdown by Discipline Type',
               onClick: renderBreakdownData
-            }, 
+            },
             {
               name: 'Breakdown by Race',
               onClick: renderBreakdownDataByRace
-            }, 
+            },
             {
-              name: 'Trends Over Time', 
+              name: 'Trends Over Time',
               onClick: renderTrends
             }
           ];
@@ -354,8 +354,8 @@
             .attr("x", width - 24)
             .attr("y", 9.5)
             .attr("dy", "0.32em")
-            .text(function(d) { 
-              return d; 
+            .text(function(d) {
+              return d;
             });
       },
 
@@ -367,7 +367,7 @@
             .attr("x",0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
-            .text("% Students Disciplined");
+            .text("% Students");
       },
 
       renderBars: (data) => {
@@ -379,15 +379,15 @@
           });
 
         gWrapper.enter().append("g")
-          .attr("transform", function(d) { 
+          .attr("transform", function(d) {
             console.log(d.name);
-            return "translate(" + x0(d.name) + ",0)"; 
+            return "translate(" + x0(d.name) + ",0)";
           })
           .attr('class', 'barGroup')
           .selectAll("rect")
-          .data(function(d) { 
-            const retval = keys.map(function(key) { 
-              return {key: key, value: d[key]}; 
+          .data(function(d) {
+            const retval = keys.map(function(key) {
+              return {key: key, value: d[key]};
             });
             console.log(d);
             console.log(retval);
@@ -395,23 +395,23 @@
           })
           .enter().append("rect")
             .attr("y", 450)
-            .attr("x", function(d) { 
-              return x1(d.key); 
+            .attr("x", function(d) {
+              return x1(d.key);
             })
             .transition()
             .duration(750)
-            .attr("y", function(d) { 
-              return y(d.value); 
+            .attr("y", function(d) {
+              return y(d.value);
             })
             .attr("width", x1.bandwidth())
             .attr("height", function(d) { return height - y(d.value); })
-            .attr("fill", function(d) { 
-              return z(d.key); 
+            .attr("fill", function(d) {
+              return z(d.key);
             });
         gWrapper.exit().remove();
       },
 
-      /** 
+      /**
         * Data Action allows for filtering for particular slices of data
         */
       renderData: (filterView, payload, data) => {
