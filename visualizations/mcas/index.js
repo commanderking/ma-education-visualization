@@ -91,10 +91,8 @@
         const studentDataForYear = filterByYear(allStudentsData, payload.year);
         const studentsForSubject = filterBySubject(studentDataForYear, payload.subject);
         const charterSchools = filterByDistrictType(studentsForSubject, 'Charter');
-        console.log(studentsForSubject);
         const charterSummaryData = sumCharterSchools(charterSchools);
         const publicDistrictSummaryData = filterByDistrictType(studentsForSubject, 'Traditional District');
-        console.log(publicDistrictSummaryData);
         const processedData = createProcessedData(
           charterSummaryData,
           publicDistrictSummaryData[0],
@@ -162,7 +160,6 @@
     }
 
     const renderDetailsData = (filters) => {
-      console.log(filters);
       view.renderData(
         filterViews.DETAIL,
         {
@@ -192,7 +189,6 @@
     }
 
     const renderTrends = (filters) => {
-      console.log(filters.subject);
       view.renderData(
         filterViews.TRENDS,
         {
@@ -208,28 +204,21 @@
       const studentDataForYear = filterByYear(data, payload.year);
       const studentDataForSubject = filterBySubject(studentDataForYear, payload.subject)
       return payload.races.map(race => {
-        return formatCharterPublicDataForRace(studentDataForSubject, race);
+        return formatCharterPublicDataForSubgroup(studentDataForSubject, race);
       });
     }
 
-    const formatCharterPublicDataForRace = (data, race) => {
-      console.log(race);
+    const formatCharterPublicDataForSubgroup = (data, race) => {
       const dataForRace = filterByStudentType(data, race);
 
-      console.log('dataForRace', dataForRace);
       const charterSchools = filterByDistrictType(dataForRace, 'Charter');
-      const charterBlackStudentData = sumCharterSchools(charterSchools);
-      const publicBlackStudentData = filterByDistrictType(dataForRace, 'Traditional District')[0];
+      const charterData = sumCharterSchools(charterSchools);
+      const publicStudentData = filterByDistrictType(dataForRace, 'Traditional District')[0];
 
-      console.log('charterBlackStudentData', charterBlackStudentData);
-      console.log('publicBlackStudentData', publicBlackStudentData);
-
-      const charterPublicBreakdownForRace = createRaceAchievementData(charterBlackStudentData, publicBlackStudentData, race);
-      console.log(charterPublicBreakdownForRace);
-      return charterPublicBreakdownForRace;
+      return createSubgroupAchievementData(charterData, publicStudentData, race);
     }
 
-    const createRaceAchievementData = (charterData, traditionalData, race) => {
+    const createSubgroupAchievementData = (charterData, traditionalData, race) => {
       return {
         name: race,
         [districtConstants.CHARTER_SCHOOLS]: calculateFractionProficientAdvanced(charterData),
@@ -242,12 +231,9 @@
     }
 
     filterForTrends = (payload, data) => {
-      console.log('filtering for trends');
-      console.log(payload);
       const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
       const allStudentsForSubject = filterBySubject(allStudentsData, payload.subject);
 
-      console.log(allStudentsForSubject);
       const years = [2011, 2012, 2013, 2014];
 
       const districtsGroupedByYear = years.map((year) => {
@@ -255,8 +241,6 @@
           return district[filterConstants.YEAR] === year;
         });
       })
-
-      console.log(districtsGroupedByYear);
 
       const yearlySummary = districtsGroupedByYear.map((districtsInYear) => {
         const charterSchools = filterByDistrictType(districtsInYear, districtConstants.CHARTER_SCHOOLS);
@@ -349,7 +333,6 @@
           buttonGroupWrapper.append(buttonGroup);
 
           buttonNames.forEach((option) => {
-            console.log(option.onClick);
            const button = document.createElement('button');
             button.className = 'btn btn-secondary';
             button.setAttribute('type', 'button');
@@ -479,13 +462,10 @@
         }
 
         const processedData = filterController(filterView, payload, data);
-        console.log(filterView);
 
         if (filterView === filterView.TRENDS) {
         } else {
           x0.domain(processedData.map(category => {
-            console.log(category.name);
-            console.log(mapMcasConstantsToLabel[category.name]);
             return category.name;
           }));
           x1.domain(keys).rangeRound([0, x0.bandwidth()]);
