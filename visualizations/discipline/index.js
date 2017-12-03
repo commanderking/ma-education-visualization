@@ -1,7 +1,7 @@
 (() => {
     const dataSource = "data.json";
     const {filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
-    const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText } = barGraphUtils();
+    const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText, renderAxes, renderYLabel } = barGraphUtils();
     const { renderLegend } = d3Utils();
 
     const disciplineConsts = {
@@ -327,7 +327,7 @@
           y.domain([0, 0.30]);
 
           view.renderAxes();
-          view.renderYLabel();
+          renderYLabel({ g, svgMargins, height, text: '% students' });
           view.renderBars(processedData);
           renderLegend({ g, width, z, legendItems: keys });
         }
@@ -351,7 +351,7 @@
         y.domain([0, 0.30]);
 
         view.renderAxes();
-        view.renderYLabel();
+        renderYLabel({ g, svgMargins, height, text: '% students' });
         view.renderBars(processedData);
         renderLegend({ g, width, z, legendItems: keys });
       }

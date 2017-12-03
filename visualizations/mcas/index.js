@@ -1,7 +1,7 @@
 (() => {
   // filterUtils defined in html file
   const { filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
-  const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText } = barGraphUtils();
+  const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText, renderAxes, renderYLabel } = barGraphUtils();
   const { renderLegend } = d3Utils();
     const dataSource = "data.json";
 
@@ -335,28 +335,6 @@
               [colorMap[districtConstants.TRADITIONAL_PUBLIC_SCHOOLS], colorMap[districtConstants.CHARTER_SCHOOLS]]);
       },
 
-      renderAxes: () => {
-        g.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x0));
-
-        g.append("g")
-            .attr("class", "axis axis--y")
-            .call(d3.axisLeft(y).ticks(5, '%'))
-      },
-
-      renderYLabel: () => {
-        g.append("text")
-            .attr("class", "label-y")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - (svgMargins.left))
-            .attr("x",0 - (height / 2))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("% Students");
-      },
-
       renderBars: (data) => {
         const barsWrapper = renderBarsWrapper(data, g);
         const barsGroup = renderBarGroups({ barsWrapper, x0, keys });
@@ -383,8 +361,8 @@
           x1.domain(keys).rangeRound([0, x0.bandwidth()]);
           y.domain([0, yDomainMax]);
 
-          view.renderAxes();
-          view.renderYLabel();
+          renderAxes({ g, x0, y, height });
+          renderYLabel({ g, svgMargins, height, text: '% students' });
           view.renderBars(processedData);
           renderLegend({ g, width, z, legendItems: keys });
         }
@@ -407,8 +385,8 @@
         x1.domain(keys).rangeRound([0, x0.bandwidth()]);
         y.domain([0, yDomainMax]);
 
-        view.renderAxes();
-        view.renderYLabel();
+        renderAxes({ g, x0, y, height });
+        renderYLabel({ g, svgMargins, height, text: '% students' });
         view.renderBars(processedData);
         renderLegend({ g, width, z, legendItems: keys });
       }

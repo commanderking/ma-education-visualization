@@ -67,6 +67,28 @@ const barGraphUtils = () => {
         .delay(750)
         .duration(1500)
         .style('opacity', 100)
-    }
+    },
+    renderAxes: (props) => {
+      const { g, x0, y, height } = props;
+      g.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x0));
+
+      g.append("g")
+          .attr("class", "axis axis--y")
+          .call(d3.axisLeft(y).ticks(5, '%'))
+    },
+    renderYLabel: (props) => {
+      const { g, svgMargins, height, text } = props;
+      g.append("text")
+          .attr("class", "label-y")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - (svgMargins.left))
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text(text);
+    },
   }
 }
