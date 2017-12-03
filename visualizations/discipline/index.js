@@ -58,7 +58,6 @@
 
     // Based on action passed in, will filter
     const filterController = (action, payload, data) => {
-      console.log(action);
       switch(action) {
         case filterViews.OVERVIEW:
           return filterForOverview(payload, data);
@@ -74,7 +73,6 @@
     }
 
     filterForTrends = (payload, data) => {
-      console.log('filtering for trends');
       const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
 
       const years = ['2012-13', '2013-14', '2014-15', '2015-16'];
@@ -85,7 +83,6 @@
         });
       })
 
-      console.log(districtsGroupedByYear);
 
       const yearlySummary = districtsGroupedByYear.map((districtsInYear) => {
         const charterSchools = filterByDistrictType(districtsInYear, districtConstants.CHARTER_SCHOOLS);
@@ -125,7 +122,6 @@
     }
 
     const formatCharterPublicDataForRace = (data, race) => {
-      console.log(race);
       const dataForRace = filterByStudentType(data, race);
 
       const charterSchools = filterByDistrictType(dataForRace, 'Charter');
@@ -239,47 +235,26 @@
       )
     }
 
-    const view = {
-      renderButtonGroups: () => {
-        const buttonGroupWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
-        if (buttonGroupWrapper) {
-          const buttonNames = [
-            {
-              name: 'Overview',
-              onClick: renderOverviewData
-            },
-            {
-              name: 'Breakdown by Discipline Type',
-              onClick: renderBreakdownData
-            },
-            {
-              name: 'Breakdown by Race',
-              onClick: renderBreakdownDataByRace
-            },
-            {
-              name: 'Trends Over Time',
-              onClick: renderTrends
-            }
-          ];
-
-          const buttonGroup = document.createElement('div');
-          buttonGroup.className = 'btn-group';
-          buttonGroup.setAttribute('role', 'group');
-          buttonGroup.setAttribute('aria-label', 'Basic example');
-
-          buttonGroupWrapper.append(buttonGroup);
-
-          buttonNames.forEach((option) => {
-           const button = document.createElement('button');
-            button.className = 'btn btn-secondary';
-            button.setAttribute('type', 'button');
-            button.innerHTML = option.name;
-            button.addEventListener('click', option.onClick);
-            buttonGroup.append(button);
-          });
-        }
+    const graphSelectorButtons = [
+      {
+        name: 'Overview',
+        onClick: renderOverviewData
       },
+      {
+        name: 'Breakdown by Discipline Type',
+        onClick: renderBreakdownData
+      },
+      {
+        name: 'Breakdown by Race',
+        onClick: renderBreakdownDataByRace
+      },
+      {
+        name: 'Trends Over Time',
+        onClick: renderTrends
+      }
+    ];
 
+    const view = {
       initializeSvg: () => {
           svg = d3.select("svg"),
           margin = {top: 20, right: 20, bottom: 30, left: 100},
@@ -339,16 +314,13 @@
         */
       renderData: (filterView, payload, data) => {
         g.selectAll('*').remove();
-        console.log('rendering data');
         if (!loadedData.length) {
           loadedData = data;
         }
 
         const processedData = filterController(filterView, payload, data);
-        console.log(filterView);
 
         if (filterView === filterView.TRENDS) {
-          console.log('hey, youre in trends');
         } else {
           x0.domain(processedData.map(category => category.name));
           x1.domain(keys).rangeRound([0, x0.bandwidth()]);
@@ -363,7 +335,6 @@
 
       },
       initialize: (filterView, payload, data) => {
-        console.log(filterView);
         if (!loadedData.length) {
           loadedData = data;
         }
@@ -385,8 +356,8 @@
         renderLegend({ g, width, z, legendItems: keys });
       }
     }
-
-    view.renderButtonGroups();
+    const graphSelectorButtonsWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
+    renderGraphSelectorButtons(graphSelectorButtons, graphSelectorButtonsWrapper);
 
     d3.json(dataSource, view.initialize.bind(this, filterViews.TRENDS, {
       studentSubgroup: 'All'
