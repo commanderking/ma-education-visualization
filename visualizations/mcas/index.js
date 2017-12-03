@@ -1,7 +1,7 @@
 (() => {
   // filterUtils defined in html file
   const {filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
-
+  const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText } = barGraphUtils();
     const dataSource = "data.json";
 
     const subgroupConsts = {
@@ -415,41 +415,10 @@
       },
 
       renderBars: (data) => {
-        const gWrapper = g.append("g")
-          .attr('class', 'gWrapper')
-          .selectAll("g")
-          .data(data, (d) => {
-            return d.name;
-          });
-
-        gWrapper.enter().append("g")
-          .attr("transform", function(d) {
-            return "translate(" + x0(d.name) + ",0)";
-          })
-          .attr('class', 'barGroup')
-          .selectAll("rect")
-          .data(function(d) {
-            const retval = keys.map(function(key) {
-              return {key: key, value: d[key]};
-            });
-            return retval;
-          })
-          .enter().append("rect")
-            .attr("y", 450)
-            .attr("x", function(d) {
-              return x1(d.key);
-            })
-            .transition()
-            .duration(750)
-            .attr("y", function(d) {
-              return y(d.value);
-            })
-            .attr("width", x1.bandwidth())
-            .attr("height", function(d) { return height - y(d.value); })
-            .attr("fill", function(d) {
-              return z(d.key);
-            });
-        gWrapper.exit().remove();
+        const barsWrapper = renderBarsWrapper(data, g);
+        const barsGroup = renderBarGroups({ barsWrapper, x0, keys });
+        renderRects({ barsGroup, x1, y, z, height});
+        renderBarsText({ barsGroup, x1, y, height });
       },
 
       /**

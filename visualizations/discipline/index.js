@@ -1,5 +1,7 @@
 (() => {
     const dataSource = "data.json";
+    const {filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
+    const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText } = barGraphUtils();
 
     const disciplineConsts = {
       STUDENTS: 'Students',
@@ -52,27 +54,6 @@
     let keys = [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS, districtConstants.CHARTER_SCHOOLS]
 
     let loadedData = [];
-
-    // TODO: Move "School Type" to ENUM
-    const filterByDistrictType = (data, schoolType) => {
-      return data.filter((school) => {
-        return school["School Type"] === schoolType;
-      });
-    }
-
-    // TODO: Move filterConstants.YEAR to ENUM
-    const filterByYear = (data, year) => {
-      return data.filter((district) => {
-        return district[filterConstants.YEAR] === year;
-      });
-    }
-
-    // TODO: Move "Subgroup" to ENUM
-    const filterByStudentType = (data, studentType) => {
-      return data.filter((district) => {
-        return district[filterConstants.SUBGROUP] === studentType;
-      })
-    }
 
     // Based on action passed in, will filter
     const filterController = (action, payload, data) => {
@@ -371,44 +352,10 @@
       },
 
       renderBars: (data) => {
-        const gWrapper = g.append("g")
-          .attr('class', 'gWrapper')
-          .selectAll("g")
-          .data(data, (d) => {
-            return d.name;
-          });
-
-        gWrapper.enter().append("g")
-          .attr("transform", function(d) {
-            console.log(d.name);
-            return "translate(" + x0(d.name) + ",0)";
-          })
-          .attr('class', 'barGroup')
-          .selectAll("rect")
-          .data(function(d) {
-            const retval = keys.map(function(key) {
-              return {key: key, value: d[key]};
-            });
-            console.log(d);
-            console.log(retval);
-            return retval;
-          })
-          .enter().append("rect")
-            .attr("y", 450)
-            .attr("x", function(d) {
-              return x1(d.key);
-            })
-            .transition()
-            .duration(750)
-            .attr("y", function(d) {
-              return y(d.value);
-            })
-            .attr("width", x1.bandwidth())
-            .attr("height", function(d) { return height - y(d.value); })
-            .attr("fill", function(d) {
-              return z(d.key);
-            });
-        gWrapper.exit().remove();
+        const barsWrapper = renderBarsWrapper(data, g);
+        const barsGroup = renderBarGroups({ barsWrapper, x0, keys });
+        renderRects({ barsGroup, x1, y, z, height});
+        renderBarsText({ barsGroup, x1, y, height });
       },
 
       /**
