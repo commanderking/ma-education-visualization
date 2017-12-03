@@ -1,0 +1,59 @@
+<html>
+<head>
+  <link rel="stylesheet" href="../../lib/bootstrap.css" />
+  <script src='../../lib/jquery-3.2.1.min.js'></script>
+  <script src='../../lib/popper.js'></script>
+  <script src='../../lib/d3.js'></script>
+  <script src='../../lib/lodash.js'></script>
+  <script src='../../lib/bootstrap.min.js'></script>
+  <script src='../../utils/filterUtils.js'></script>
+  <script src='../../utils/barGraphUtils.js'></script>
+  <script src='../../utils/d3Utils.js'></script>
+  <script src='../components/graphSelectorButtons.js'></script>
+
+</head>
+<style>
+
+.axis--x path {
+  display: none;
+}
+
+#schoolSelector {
+  font-size: 20px;
+}
+
+.axis--y {
+  font-size: 16px;
+}
+
+.label-y {
+  font-size: 20px;
+}
+
+.dataWrapper {
+  width: 960px;
+  margin: auto;
+}
+
+.dataWrapper h2 {
+  text-align: center;
+}
+
+.btn-group-wrapper {
+  text-align: center;
+}
+
+</style>
+<body>
+  <div class="dataWrapper">
+    <h2>
+      Boston Public School Attrition Data (Charter and District)
+    </h2>
+    <div class="btn-group-wrapper">
+    </div>
+    <svg width="960" height="500"></svg>
+  </div>
+<script src="./index.js">
+</script>
+<body>
+</html>

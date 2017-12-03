@@ -1,17 +1,24 @@
 (() => {
     const dataSource = "data.json";
-    const {filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
+    const { filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
     const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText, renderAxes, renderYLabel } = barGraphUtils();
     const { renderLegend } = d3Utils();
 
-    const disciplineConsts = {
-      STUDENTS: 'Students',
-      STUDENTS_DISCIPLINED: 'Students Disciplined',
-      IN_SCHOOL_SUSPENSION: '# In-School Suspension',
-      OUT_SCHOOL_SUSPENSION: '# Out-of-School Suspension',
-      EXPULSION: '# Expulsion',
-      REMOVED_TO_ALTERNATE: '# Removed to Alternate Setting',
-      EMERGENCY_REMOVAL: '# Emergency Removal',
+    const attritionConstants = {
+      STUDENT_COUNT: 'All total',
+      ATTRITION_COUNT: 'All # attrit',
+      ATTRITION_COUNT_K: 'K total',
+      ATTRITION_COUNT_1: '1 total',
+      ATTRITION_COUNT_2: '2 total',
+      ATTRITION_COUNT_3: '3 total',
+      ATTRITION_COUNT_4: '4 total',
+      ATTRITION_COUNT_5: '5 total',
+      ATTRITION_COUNT_6: '6 total',
+      ATTRITION_COUNT_7: '7 total',
+      ATTRITION_COUNT_8: '8 total',
+      ATTRITION_COUNT_9: '9 total',
+      ATTRITION_COUNT_10: '10 total',
+      ATTRITION_COUNT_11: '11 total'
     }
 
     const raceConsts = {
@@ -44,6 +51,7 @@
 
     // Svg related Constants
     const svgMargins = {top: 20, right: 20, bottom: 70, left: 80};
+    const yDomainMax = 0.2; // Max % for y-axis label
     let x0;
     let x1;
     let y;
@@ -61,28 +69,41 @@
       switch(action) {
         case filterViews.OVERVIEW:
           return filterForOverview(payload, data);
-        case filterViews.BREAKDOWN_DISCIPLINE:
-          return filterForBreakdownDiscipline(data)
-        case filterViews.BREAKDOWN_RACE:
-          return filterForRaceView(payload, data)
+        case filterViews.DETAIL:
+          return filterForOverview(payload, data);
         case filterViews.TRENDS:
-          return filterForTrends(payload, data)
+          return filterForTrends(payload, data);
         default:
           return [];
       }
     }
 
+    const filterForOverview = (payload, data) => {
+        // Manipulating data to get 2015 all student data
+        const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
+        const studentDataForYear = filterByYear(allStudentsData, payload.year);
+        const charterSchools = filterByDistrictType(studentDataForYear, districtConstants.CHARTER_SCHOOLS);
+        const charterSummaryData = sumCharterSchools(charterSchools);
+        const publicDistrictSummaryData = filterByDistrictType(studentDataForYear, districtConstants.TRADITIONAL_PUBLIC_SCHOOLS);
+
+        const processedData = createProcessedData(
+          charterSummaryData,
+          publicDistrictSummaryData[0],
+          payload.categories
+        );
+        return processedData;
+    }
+
     const filterForTrends = (payload, data) => {
       const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
 
-      const years = ['2012-13', '2013-14', '2014-15', '2015-16'];
+      const years = ['2011-12', '2012-13', '2013-14', '2014-15', '2015-16', '2016-17'];
 
       const districtsGroupedByYear = years.map((year) => {
         return allStudentsData.filter((district) => {
           return district[filterConstants.YEAR] === year;
         });
       })
-
 
       const yearlySummary = districtsGroupedByYear.map((districtsInYear) => {
         const charterSchools = filterByDistrictType(districtsInYear, districtConstants.CHARTER_SCHOOLS);
@@ -91,81 +112,31 @@
 
         return {
           name: districtsInYear[0][filterConstants.YEAR],
-          [districtConstants.CHARTER_SCHOOLS]: charterSummaryData[disciplineConsts.STUDENTS_DISCIPLINED] / charterSummaryData[disciplineConsts.STUDENTS],
-          [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: publicDistrictSummaryData[disciplineConsts.STUDENTS_DISCIPLINED] / publicDistrictSummaryData[disciplineConsts.STUDENTS]
+          [districtConstants.CHARTER_SCHOOLS]: charterSummaryData[attritionConstants.ATTRITION_COUNT] / charterSummaryData[attritionConstants.STUDENT_COUNT],
+          [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: publicDistrictSummaryData[attritionConstants.ATTRITION_COUNT] / publicDistrictSummaryData[attritionConstants.STUDENT_COUNT]
         };
       });
+
+      console.log(yearlySummary);
       return yearlySummary;
     }
 
-    const filterForOverview = (payload, data) => {
-        // Manipulating data to get 2015 all student data
-        const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
-        const studentDataForYear = filterByYear(allStudentsData, payload.year);
-        const charterSchools = filterByDistrictType(studentDataForYear, 'Charter');
-        const charterSummaryData = sumCharterSchools(charterSchools);
-        const publicDistrictSummaryData = filterByDistrictType(studentDataForYear, 'Traditional District');
-        const processedData = createProcessedData(
-          charterSummaryData,
-          publicDistrictSummaryData[0],
-          payload.disciplineTypes
-        );
-        return processedData;
-    }
-
-    // Race view shows general discipline statistics
-    const filterForRaceView = (payload, data) => {
-      const studentDataForYear = filterByYear(data, payload.year);
-      return payload.races.map(race => {
-        return formatCharterPublicDataForRace(studentDataForYear, race);
-      });
-    }
-
-    const formatCharterPublicDataForRace = (data, race) => {
-      const dataForRace = filterByStudentType(data, race);
-
-      const charterSchools = filterByDistrictType(dataForRace, 'Charter');
-      const charterBlackStudentData = sumCharterSchools(charterSchools);
-      const publicBlackStudentData = filterByDistrictType(dataForRace, 'Traditional District')[0];
-
-      const charterPublicBreakdownForRace = createRaceVerticalData(charterBlackStudentData, publicBlackStudentData, race);
-      return charterPublicBreakdownForRace;
-    }
-
-    const createRaceVerticalData = (charterData, traditionalData, race) => {
-      return {
-        name: race,
-        [districtConstants.CHARTER_SCHOOLS]: calculateFractionDisciplined(charterData),
-        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: calculateFractionDisciplined(traditionalData)
-      }
-    }
-
-    const calculateFractionDisciplined = (schoolData) => {
-      return schoolData[disciplineConsts.STUDENTS_DISCIPLINED] / schoolData[disciplineConsts.STUDENTS];
-    }
 
     // Takes all charter school entries, sums up data, and creates new object with select properties summed
     const sumCharterSchools = (data) => {
       const charterSummaryData = {
         schoolType: 'Charter',
         districtName: 'Boston Charter Schools',
-        [disciplineConsts.STUDENTS]: 0,
-        [disciplineConsts.STUDENTS_DISCIPLINED]: 0,
-        [disciplineConsts.IN_SCHOOL_SUSPENSION]: 0,
-        [disciplineConsts.OUT_SCHOOL_SUSPENSION]: 0,
-        [disciplineConsts.EXPULSION]: 0,
-        [disciplineConsts.REMOVED_TO_ALTERNATE]: 0,
-        [disciplineConsts.EMERGENCY_REMOVAL]: 0
       }
 
+      _.forOwn(attritionConstants, constant => {
+        charterSummaryData[constant] = 0;
+      });
+
       data.forEach((school) => {
-        charterSummaryData[disciplineConsts.STUDENTS] += school[disciplineConsts.STUDENTS] || 0;
-        charterSummaryData[disciplineConsts.STUDENTS_DISCIPLINED] += school[disciplineConsts.STUDENTS_DISCIPLINED] || 0;
-        charterSummaryData[disciplineConsts.IN_SCHOOL_SUSPENSION] += school[disciplineConsts.IN_SCHOOL_SUSPENSION] || 0;
-        charterSummaryData[disciplineConsts.OUT_SCHOOL_SUSPENSION] += school[disciplineConsts.OUT_SCHOOL_SUSPENSION] || 0;
-        charterSummaryData[disciplineConsts.EXPULSION] += school[disciplineConsts.EXPULSION] || 0;
-        charterSummaryData[disciplineConsts.REMOVED_TO_ALTERNATE] += school[disciplineConsts.REMOVED_TO_ALTERNATE] || 0;
-        charterSummaryData[disciplineConsts.EMERGENCY_REMOVAL] += school[disciplineConsts.EMERGENCY_REMOVAL] || 0;
+        _.forOwn(attritionConstants, constant => {
+          charterSummaryData[constant] += school[constant] || 0;
+        })
       });
 
       return charterSummaryData;
@@ -174,8 +145,8 @@
     const createCategoryData = (charterData, traditionalData, category) => {
       return {
         name: category,
-        [districtConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[disciplineConsts.STUDENTS],
-        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[disciplineConsts.STUDENTS]
+        [districtConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[attritionConstants.STUDENT_COUNT],
+        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[attritionConstants.STUDENT_COUNT]
       }
     }
 
@@ -193,44 +164,38 @@
         filterViews.OVERVIEW,
         {
           studentSubgroup: 'All',
-          year: '2015-16',
-          disciplineTypes: [disciplineConsts.STUDENTS_DISCIPLINED]
+          year: '2016-17',
+          categories: [attritionConstants.ATTRITION_COUNT]
         },
         loadedData
       );
-    }
-    const renderBreakdownData = () => {
+    };
+
+    const renderDetailData = () => {
+      const categories = [];
+      const gradeLevelAttrition = _.omit(attritionConstants, ['STUDENT_COUNT', 'ATTRITION_COUNT']);
+
+      _.forOwn(gradeLevelAttrition, constant => {
+        categories.push(constant);
+      });
+
       view.renderData(
         filterViews.OVERVIEW,
         {
           studentSubgroup: 'All',
-          year: '2015-16',
-          disciplineTypes: [
-            disciplineConsts.STUDENTS_DISCIPLINED,
-            disciplineConsts.IN_SCHOOL_SUSPENSION,
-            disciplineConsts.OUT_SCHOOL_SUSPENSION,
-            disciplineConsts.EXPULSION,
-            disciplineConsts.EMERGENCY_REMOVAL
-          ]
+          year: '2016-17',
+          categories
         },
         loadedData
       );
-    }
-
-    const renderBreakdownDataByRace = () => {
-      view.renderData(
-        filterViews.BREAKDOWN_RACE,
-        { year: '2015-16',
-          races: [raceConsts.BLACK, raceConsts.HISPANIC]
-        },
-        loadedData
-      )
-    }
+    };
 
     const renderTrends = () => {
       view.renderData(
         filterViews.TRENDS,
-        { studentSubgroup: 'All' },
+        {
+          studentSubgroup: 'All'
+        },
         loadedData
       )
     }
@@ -241,15 +206,11 @@
         onClick: renderOverviewData
       },
       {
-        name: 'Breakdown by Discipline Type',
-        onClick: renderBreakdownData
+        name: 'Grade Breakdown',
+        onClick: renderDetailData
       },
       {
-        name: 'Breakdown by Race',
-        onClick: renderBreakdownDataByRace
-      },
-      {
-        name: 'Trends Over Time',
+        name: 'Trends',
         onClick: renderTrends
       }
     ];
@@ -301,14 +262,13 @@
         } else {
           x0.domain(processedData.map(category => category.name));
           x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-          y.domain([0, 0.30]);
+          y.domain([0, yDomainMax]);
 
           renderAxes({ g, x0, y, height });
           renderYLabel({ g, svgMargins, height, text: '% students' });
           view.renderBars(processedData);
           renderLegend({ g, width, z, legendItems: keys });
         }
-
 
       },
       initialize: (filterView, payload, data) => {
@@ -321,11 +281,10 @@
 
         const processedData = filterController(filterView, payload, data);
 
-        // filterForBreakdownRace(data);
         // Creates label for category on x-axis
         x0.domain(processedData.map(category => category.name));
         x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-        y.domain([0, 0.30]);
+        y.domain([0, yDomainMax]);
 
         renderAxes({ g, x0, y, height });
         renderYLabel({ g, svgMargins, height, text: '% students' });
@@ -336,7 +295,9 @@
     const graphSelectorButtonsWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
     renderGraphSelectorButtons(graphSelectorButtons, graphSelectorButtonsWrapper);
 
-    d3.json(dataSource, view.initialize.bind(this, filterViews.TRENDS, {
-      studentSubgroup: 'All'
+    d3.json(dataSource, view.initialize.bind(this, filterViews.OVERVIEW, {
+      studentSubgroup: 'All',
+      year: '2016-17',
+      categories: [attritionConstants.ATTRITION_COUNT]
     }));
 })();
