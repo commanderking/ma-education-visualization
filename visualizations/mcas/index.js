@@ -1,6 +1,6 @@
 (() => {
   // filterUtils defined in html file
-  const {filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
+  const { filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
   const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText } = barGraphUtils();
   const { renderLegend } = d3Utils();
     const dataSource = "data.json";
@@ -54,6 +54,58 @@
       [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: "#98abc5",
       [districtConstants.CHARTER_SCHOOLS]: "#8a89a6"
     }
+
+    const graphSelectorButtons = [
+      {
+        name: 'ELA - Overview',
+        onClick: () => {
+          renderOverviewData(subjectConstants.ELA)
+        }
+      },
+      {
+        name: 'ELA - Details',
+        onClick: () => {
+          renderDetailsData({ subject: subjectConstants.ELA, studentSubgroup: subgroupConsts.ALL})
+        }
+      },
+      {
+        name: 'ELA - By Subgroup',
+        onClick: () => {
+          renderBreakdownDataByRace({ subject: subjectConstants.ELA })
+        }
+      },
+      {
+        name: 'ELA - Trends',
+        onClick: () => {
+          renderTrends({ subject: subjectConstants.ELA })
+        }
+      },
+      {
+        name: 'Math - Overview',
+        onClick: () => {
+          renderOverviewData(subjectConstants.MATH)
+        }
+      },
+      {
+        name: 'Math - Details',
+        onClick: () => {
+          renderDetailsData({ subject: subjectConstants.MATH, studentSubgroup: subgroupConsts.ALL
+          })
+        }
+      },
+      {
+        name: 'Math - By Subgroup',
+        onClick: () => {
+          renderBreakdownDataByRace({ subject: subjectConstants.MATH })
+        }
+      },
+      {
+        name: 'Math - Trends',
+        onClick: () => {
+          renderTrends({ subject: subjectConstants.MATH })
+        }
+      },
+    ];
 
     // Svg related Constants
     const svgMargins = {top: 20, right: 20, bottom: 70, left: 80};
@@ -258,91 +310,6 @@
     };
 
     const view = {
-      renderButtonGroups: () => {
-        const buttonGroupWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
-        if (buttonGroupWrapper) {
-          const buttonNames = [
-            {
-              name: 'ELA - Overview',
-              onClick: () => {
-                renderOverviewData(subjectConstants.ELA)
-              }
-            },
-            {
-              name: 'ELA - Details',
-              onClick: () => {
-                renderDetailsData({
-                  subject: subjectConstants.ELA,
-                  studentSubgroup: subgroupConsts.ALL
-                })
-              }
-            },
-            {
-              name: 'ELA - By Subgroup',
-              onClick: () => {
-                renderBreakdownDataByRace({
-                  subject: subjectConstants.ELA
-                })
-              }
-            },
-            {
-              name: 'ELA - Trends',
-              onClick: () => {
-                renderTrends({
-                  subject: subjectConstants.ELA
-                })
-              }
-            },
-            {
-              name: 'Math - Overview',
-              onClick: () => {
-                renderOverviewData(subjectConstants.MATH)
-              }
-            },
-            {
-              name: 'Math - Details',
-              onClick: () => {
-                renderDetailsData({
-                  subject: subjectConstants.MATH,
-                  studentSubgroup: subgroupConsts.ALL
-                })
-              }
-            },
-            {
-              name: 'Math - By Subgroup',
-              onClick: () => {
-                renderBreakdownDataByRace({
-                  subject: subjectConstants.MATH
-                })
-              }
-            },
-            {
-              name: 'Math - Trends',
-              onClick: () => {
-                renderTrends({
-                  subject: subjectConstants.MATH
-                })
-              }
-            },
-          ];
-
-          const buttonGroup = document.createElement('div');
-          buttonGroup.className = 'btn-group';
-          buttonGroup.setAttribute('role', 'group');
-          buttonGroup.setAttribute('aria-label', 'Basic example');
-
-          buttonGroupWrapper.append(buttonGroup);
-
-          buttonNames.forEach((option) => {
-           const button = document.createElement('button');
-            button.className = 'btn btn-secondary';
-            button.setAttribute('type', 'button');
-            button.innerHTML = option.name;
-            button.addEventListener('click', option.onClick);
-            buttonGroup.append(button);
-          });
-        }
-      },
 
       initializeSvg: () => {
           svg = d3.select("svg"),
@@ -447,7 +414,8 @@
       }
     }
 
-    view.renderButtonGroups();
+    const graphSelectorButtonsWrapper = document.getElementsByClassName('btn-group-wrapper')[0];
+    renderGraphSelectorButtons(graphSelectorButtons, graphSelectorButtonsWrapper);
 
     d3.json(dataSource, view.initialize.bind(this, filterViews.DETAIL, {
       studentSubgroup: 'All',
