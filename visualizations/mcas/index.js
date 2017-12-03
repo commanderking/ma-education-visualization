@@ -2,6 +2,7 @@
   // filterUtils defined in html file
   const {filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
   const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText } = barGraphUtils();
+  const { renderLegend } = d3Utils();
     const dataSource = "data.json";
 
     const subgroupConsts = {
@@ -378,31 +379,6 @@
             .call(d3.axisLeft(y).ticks(5, '%'))
       },
 
-      renderLegend: () => {
-        const legend = g.append("g")
-            .attr("font-family", "sans-serif")
-            .attr("font-size", 14)
-            .attr("text-anchor", "end")
-          .selectAll("g")
-          .data(keys)
-          .enter().append("g")
-            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-        legend.append("rect")
-            .attr("x", width - 19)
-            .attr("width", 19)
-            .attr("height", 19)
-            .attr("fill", z);
-
-        legend.append("text")
-            .attr("x", width - 24)
-            .attr("y", 9.5)
-            .attr("dy", "0.32em")
-            .text(function(d) {
-              return d;
-            });
-      },
-
       renderYLabel: () => {
         g.append("text")
             .attr("class", "label-y")
@@ -443,7 +419,7 @@
           view.renderAxes();
           view.renderYLabel();
           view.renderBars(processedData);
-          view.renderLegend();
+          renderLegend({ g, width, z, legendItems: keys });
         }
 
 
@@ -467,7 +443,7 @@
         view.renderAxes();
         view.renderYLabel();
         view.renderBars(processedData);
-        view.renderLegend();
+        renderLegend({ g, width, z, legendItems: keys });
       }
     }
 
