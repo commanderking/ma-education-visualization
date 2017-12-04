@@ -29,6 +29,20 @@ const d3Utils = () => {
           .text(function(d) {
             return d;
           });
+    },
+    renderXAxis: (props) => {
+      const { g, height, x } = props;
+      g.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .attr('class', 'axis axis--y')
+        .call(d3.axisBottom(x));
+    },
+    renderYAxis: (props) => {
+      // Add the Y Axis
+      const { g, height, y, tickCount } = props;
+      g.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(y).ticks(tickCount, '%'));
     }
   }
 }

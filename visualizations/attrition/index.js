@@ -2,7 +2,8 @@
     const dataSource = "data.json";
     const { filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
     const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText, renderAxes, renderYLabel } = barGraphUtils();
-    const { renderLegend } = d3Utils();
+    const { scaleRanges, renderLine } = lineGraphUtils();
+    const { renderLegend, renderXAxis, renderYAxis } = d3Utils();
 
     const attritionConstants = {
       STUDENT_COUNT: 'All total',
@@ -31,11 +32,6 @@
       BREAKDOWN_DISCIPLINE: 'breakdownByDiscipline',
       BREAKDOWN_RACE: 'breakdownByRace',
       TRENDS: 'trends'
-    }
-
-    const districtConstants = {
-      CHARTER_SCHOOLS: "Charter",
-      TRADITIONAL_PUBLIC_SCHOOLS: "Traditional District",
     }
 
     const filterConstants = {
@@ -95,6 +91,7 @@
     }
 
     const filterForTrends = (payload, data) => {
+      console.log('filtering for trends');
       const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
 
       const years = ['2011-12', '2012-13', '2013-14', '2014-15', '2015-16', '2016-17'];
@@ -258,18 +255,47 @@
 
         const processedData = filterController(filterView, payload, data);
 
-        if (filterView === filterView.TRENDS) {
+        if (filterView === filterViews.TRENDS) {
+          // Line graph
+          x = d3.scaleTime().range([50, width]);
+          y = d3.scaleLinear().range([height, 0]);
+
+          scaleRanges({ data: processedData, x, y, yDomainMax });
+
+          // render charter school line
+          renderLine({
+            data: processedData,
+            g,
+            x,
+            y,
+            yKey: districtConstants.CHARTER_SCHOOLS,
+            lineColor: colorMap[districtConstants.CHARTER_SCHOOLS]
+          });
+
+          renderLine({
+            data: processedData,
+            g,
+            x,
+            y,
+            yKey: districtConstants.TRADITIONAL_PUBLIC_SCHOOLS,
+            lineColor: colorMap[districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]
+          });
+
+          renderXAxis({ g, height, x });
+          renderYAxis({ g, height, y, tickCount: 5});
         } else {
+          // Bar graph
           x0.domain(processedData.map(category => category.name));
           x1.domain(keys).rangeRound([0, x0.bandwidth()]);
           y.domain([0, yDomainMax]);
 
           renderAxes({ g, x0, y, height });
-          renderYLabel({ g, svgMargins, height, text: '% students' });
           view.renderBars(processedData);
-          renderLegend({ g, width, z, legendItems: keys });
         }
 
+        // Always render a legend
+        renderLegend({ g, width, z, legendItems: keys });
+        renderYLabel({ g, svgMargins, height, text: '% students' });
       },
       initialize: (filterView, payload, data) => {
         if (!loadedData.length) {
