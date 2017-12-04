@@ -31,14 +31,13 @@ const d3Utils = () => {
           });
     },
     renderXAxis: (props) => {
-      const { g, height, x } = props;
+      const { g, height, x, tickCount } = props;
       g.append("g")
         .attr("transform", "translate(0," + height + ")")
         .attr('class', 'axis axis--y')
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).ticks(4));
     },
     renderYAxis: (props) => {
-      // Add the Y Axis
       const { g, height, y, tickCount } = props;
       g.append("g")
         .attr("class", "axis axis--y")

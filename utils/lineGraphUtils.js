@@ -1,12 +1,19 @@
 const lineGraphUtils = () => {
   const parseYear = (yearString) => {
-    return d3.timeParse('%Y')(parseInt(yearString.split('-')[0], 10));
+    // if year is already formatted, then just return timeParse of year, else return a parsed version
+    if (yearString.toString().length === 4) {
+      return d3.timeParse('%Y')(parseInt(yearString));
+    }
+    // split 2015-16 to 2016
+    const laterYear = 2000 + parseInt(yearString.split('-')[1], 10);
+    return d3.timeParse('%Y')(laterYear);
   }
 
   return {
     scaleRanges: (props) => {
       const { data, x, y, yDomainMax } = props;
       x.domain(d3.extent(data, function(d) {
+        console.log(d.name);
         return parseYear(d.name);
       }));
       y.domain([0, yDomainMax]);

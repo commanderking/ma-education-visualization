@@ -1,8 +1,9 @@
 (() => {
     const dataSource = "data.json";
-    const {filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
+    const { filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
     const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText, renderAxes, renderYLabel } = barGraphUtils();
-    const { renderLegend } = d3Utils();
+    const { scaleRanges, renderLine } = lineGraphUtils();
+    const { renderLegend, renderXAxis, renderYAxis } = d3Utils();
 
     const disciplineConsts = {
       STUDENTS: 'Students',
@@ -44,6 +45,7 @@
 
     // Svg related Constants
     const svgMargins = {top: 20, right: 20, bottom: 70, left: 80};
+    const yDomainMax = 0.30;
     let x0;
     let x1;
     let y;
@@ -297,18 +299,44 @@
 
         const processedData = filterController(filterView, payload, data);
 
-        if (filterView === filterView.TRENDS) {
+        if (filterView === filterViews.TRENDS) {
+          // Line graph
+          x = d3.scaleTime().range([50, width]);
+          y = d3.scaleLinear().range([height, 0]);
+
+          scaleRanges({ data: processedData, x, y, yDomainMax });
+
+          // render charter school line
+          renderLine({
+            data: processedData,
+            g,
+            x,
+            y,
+            yKey: districtConstants.CHARTER_SCHOOLS,
+            lineColor: colorMap[districtConstants.CHARTER_SCHOOLS]
+          });
+
+          renderLine({
+            data: processedData,
+            g,
+            x,
+            y,
+            yKey: districtConstants.TRADITIONAL_PUBLIC_SCHOOLS,
+            lineColor: colorMap[districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]
+          });
+
+          renderXAxis({ g, height, x, tickCount: processedData.length});
+          renderYAxis({ g, height, y, tickCount: 5});
         } else {
           x0.domain(processedData.map(category => category.name));
           x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-          y.domain([0, 0.30]);
+          y.domain([0, yDomainMax]);
 
           renderAxes({ g, x0, y, height });
           renderYLabel({ g, svgMargins, height, text: '% students' });
           view.renderBars(processedData);
-          renderLegend({ g, width, z, legendItems: keys });
         }
-
+      renderLegend({ g, width, z, legendItems: keys });
 
       },
       initialize: (filterView, payload, data) => {
@@ -325,7 +353,7 @@
         // Creates label for category on x-axis
         x0.domain(processedData.map(category => category.name));
         x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-        y.domain([0, 0.30]);
+        y.domain([0, yDomainMax]);
 
         renderAxes({ g, x0, y, height });
         renderYLabel({ g, svgMargins, height, text: '% students' });
