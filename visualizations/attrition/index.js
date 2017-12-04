@@ -281,7 +281,7 @@
             lineColor: colorMap[districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]
           });
 
-          renderXAxis({ g, height, x });
+          renderXAxis({ g, height, x, tickCount: processedData.length });
           renderYAxis({ g, height, y, tickCount: 5});
         } else {
           // Bar graph

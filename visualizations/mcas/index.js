@@ -2,7 +2,8 @@
   // filterUtils defined in html file
   const { filterByDistrictType, filterByYear, filterByStudentType, filterBySubject } = filterUtils;
   const { renderBarsWrapper, renderBarGroups, renderRects, renderBarsText, renderAxes, renderYLabel } = barGraphUtils();
-  const { renderLegend } = d3Utils();
+  const { scaleRanges, renderLine } = lineGraphUtils();
+  const { renderLegend, renderXAxis, renderYAxis } = d3Utils();
     const dataSource = "data.json";
 
     const subgroupConsts = {
@@ -353,7 +354,34 @@
 
         const processedData = filterController(filterView, payload, data);
 
-        if (filterView === filterView.TRENDS) {
+        if (filterView === filterViews.TRENDS) {
+          // Line graph
+          x = d3.scaleTime().range([50, width]);
+          y = d3.scaleLinear().range([height, 0]);
+
+          scaleRanges({ data: processedData, x, y, yDomainMax });
+
+          // render charter school line
+          renderLine({
+            data: processedData,
+            g,
+            x,
+            y,
+            yKey: districtConstants.CHARTER_SCHOOLS,
+            lineColor: colorMap[districtConstants.CHARTER_SCHOOLS]
+          });
+
+          renderLine({
+            data: processedData,
+            g,
+            x,
+            y,
+            yKey: districtConstants.TRADITIONAL_PUBLIC_SCHOOLS,
+            lineColor: colorMap[districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]
+          });
+
+          renderXAxis({ g, height, x });
+          renderYAxis({ g, height, y, tickCount: 5});
         } else {
           x0.domain(processedData.map(category => {
             return category.name;
@@ -366,8 +394,6 @@
           view.renderBars(processedData);
           renderLegend({ g, width, z, legendItems: keys });
         }
-
-
       },
       initialize: (filterView, payload, data) => {
         if (!loadedData.length) {
