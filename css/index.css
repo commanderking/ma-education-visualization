@@ -24,7 +24,7 @@
   margin: auto;
 }
 
-.dataWrapper h2 {
+.dataWrapper h2, .dataWrapper h3 {
   text-align: center;
 }
 
