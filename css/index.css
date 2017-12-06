@@ -19,6 +19,10 @@
   font-size: 20px;
 }
 
+.bar-text {
+  font-size: 14px;
+}
+
 .dataWrapper {
   width: 960px;
   margin: auto;
@@ -43,4 +47,7 @@
 }
 .next-graph-button:hover {
   cursor: pointer
+}
+.btn-secondary:focus {
+  background-color: #ff6961;
 }

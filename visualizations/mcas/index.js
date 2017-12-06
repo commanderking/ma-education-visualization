@@ -58,50 +58,50 @@
 
     const graphSelectorButtons = [
       {
-        name: 'ELA - Overview',
+        name: 'ELA-Overview',
         onClick: () => {
           renderOverviewData(subjectConstants.ELA)
         }
       },
       {
-        name: 'ELA - Details',
+        name: 'ELA-Details',
         onClick: () => {
           renderDetailsData({ subject: subjectConstants.ELA, studentSubgroup: subgroupConsts.ALL})
         }
       },
       {
-        name: 'ELA - By Subgroup',
+        name: 'ELA-Subgroup',
         onClick: () => {
           renderBreakdownDataByRace({ subject: subjectConstants.ELA })
         }
       },
       {
-        name: 'ELA - Trends',
+        name: 'ELA-Trends',
         onClick: () => {
           renderTrends({ subject: subjectConstants.ELA })
         }
       },
       {
-        name: 'Math - Overview',
+        name: 'Math-Overview',
         onClick: () => {
           renderOverviewData(subjectConstants.MATH)
         }
       },
       {
-        name: 'Math - Details',
+        name: 'Math-Details',
         onClick: () => {
           renderDetailsData({ subject: subjectConstants.MATH, studentSubgroup: subgroupConsts.ALL
           })
         }
       },
       {
-        name: 'Math - By Subgroup',
+        name: 'Math-Subgroup',
         onClick: () => {
           renderBreakdownDataByRace({ subject: subjectConstants.MATH })
         }
       },
       {
-        name: 'Math - Trends',
+        name: 'Math-Trends',
         onClick: () => {
           renderTrends({ subject: subjectConstants.MATH })
         }
