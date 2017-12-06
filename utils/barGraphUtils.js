@@ -55,13 +55,15 @@ const barGraphUtils = () => {
           }
         })
         .attr('x', (d) => {
-          return x1(d.key) + x1.bandwidth()/2 -20;
+          return x1(d.key) + x1.bandwidth()/2 - 17;
         })
+        .attr('class', 'bar-text')
         .text((d) => {
           // Only show text if value is higher than 0
           if (d.value) {
             return `${(d.value* 100).toFixed(1)}%`;
-          }          })
+          }
+        })
         .style('opacity', 0)
         .transition()
         .delay(750)
