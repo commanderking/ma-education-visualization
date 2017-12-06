@@ -32,3 +32,11 @@
   fill: none;
   stroke-width: 4px;
 }
+
+.next-button-wrapper {
+  width: 100%;
+  text-align: center;
+}
+.next-graph-button:hover {
+  cursor: pointer
+}
