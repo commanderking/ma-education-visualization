@@ -8,16 +8,17 @@
     const disciplineConsts = {
       STUDENTS: 'Students',
       STUDENTS_DISCIPLINED: 'Students Disciplined',
-      IN_SCHOOL_SUSPENSION: '# In-School Suspension',
-      OUT_SCHOOL_SUSPENSION: '# Out-of-School Suspension',
-      EXPULSION: '# Expulsion',
-      REMOVED_TO_ALTERNATE: '# Removed to Alternate Setting',
-      EMERGENCY_REMOVAL: '# Emergency Removal',
+      IN_SCHOOL_SUSPENSION: 'In-School Suspension',
+      OUT_SCHOOL_SUSPENSION: 'Out-of-School Suspension',
+      EXPULSION: 'Expulsion',
+      REMOVED_TO_ALTERNATE: 'Removed to Alternate Setting',
+      EMERGENCY_REMOVAL: 'Emergency Removal',
     }
 
     const raceConsts = {
       BLACK: 'Black',
-      HISPANIC: 'Hispanic/Latino'
+      HISPANIC: 'Hispanic/Latino',
+      WHITE: 'White'
     }
 
     const filterViews = {
@@ -223,7 +224,7 @@
       view.renderData(
         filterViews.BREAKDOWN_RACE,
         { year: '2015-16',
-          races: [raceConsts.BLACK, raceConsts.HISPANIC]
+          races: [raceConsts.BLACK, raceConsts.HISPANIC, raceConsts.WHITE]
         },
         loadedData
       )
@@ -333,9 +334,9 @@
           y.domain([0, yDomainMax]);
 
           renderAxes({ g, x0, y, height });
-          renderYLabel({ g, svgMargins, height, text: '% students' });
           view.renderBars(processedData);
         }
+      renderYLabel({ g, svgMargins, height, text: '% students' });
       renderLegend({ g, width, z, legendItems: keys });
 
       },

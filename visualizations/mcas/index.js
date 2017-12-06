@@ -203,7 +203,7 @@
         filterViews.OVERVIEW,
         {
           studentSubgroup: subgroupConsts.ALL,
-          year: 2013,
+          year: 2014,
           subject: subject,
           mcasConstants: [
             mcasConstants.PROFICIENT_ADVANCED
@@ -218,7 +218,7 @@
         filterViews.DETAIL,
         {
           studentSubgroup: filters.studentSubgroup || subgroupConsts.ALL,
-          year: 2013,
+          year: 2014,
           subject: filters.subject || filters.ELA,
           mcasConstants: [
             mcasConstants.ADVANCED,
@@ -234,7 +234,7 @@
     const renderBreakdownDataByRace = (filters) => {
       view.renderData(
         filterViews.BREAKDOWN_RACE,
-        { year: 2013,
+        { year: 2014,
           races: [subgroupConsts.BLACK, subgroupConsts.HISPANIC, subgroupConsts.ELL, subgroupConsts.SWD],
           subject: filters.subject
         },
@@ -390,10 +390,11 @@
           y.domain([0, yDomainMax]);
 
           renderAxes({ g, x0, y, height });
-          renderYLabel({ g, svgMargins, height, text: '% students' });
           view.renderBars(processedData);
-          renderLegend({ g, width, z, legendItems: keys });
         }
+
+        renderYLabel({ g, svgMargins, height, text: '% students' });
+        renderLegend({ g, width, z, legendItems: keys });
       },
       initialize: (filterView, payload, data) => {
         if (!loadedData.length) {
@@ -423,7 +424,7 @@
 
     d3.json(dataSource, view.initialize.bind(this, filterViews.DETAIL, {
       studentSubgroup: 'All',
-      year: 2013,
+      year: 2014,
       subject: subjectConstants.ELA,
       mcasConstants: [
         mcasConstants.ADVANCED,
