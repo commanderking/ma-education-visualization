@@ -22,11 +22,11 @@
 
     const mcasConstants = {
       STUDENTS_COUNT: 'Student Included',
-      PROFICIENT_ADVANCED: 'P+A #',
-      ADVANCED: 'A #',
-      PROFICIENT: 'P #',
-      NEEDS_IMPROVEMENT: 'NI #',
-      WARNING_FAIL: 'W/F #',
+      PROFICIENT_ADVANCED: 'P+A',
+      ADVANCED: 'A',
+      PROFICIENT: 'P',
+      NEEDS_IMPROVEMENT: 'NI',
+      WARNING_FAIL: 'W/F',
       CPI: 'CPI'
     }
 
@@ -288,7 +288,7 @@
       const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
       const allStudentsForSubject = filterBySubject(allStudentsData, payload.subject);
 
-      const years = [2011, 2012, 2013, 2014];
+      const years = [2011, 2012, 2013];
 
       const districtsGroupedByYear = years.map((year) => {
         return allStudentsForSubject.filter((district) => {
@@ -424,7 +424,7 @@
 
     d3.json(dataSource, view.initialize.bind(this, filterViews.DETAIL, {
       studentSubgroup: 'All',
-      year: 2014,
+      year: 2013,
       subject: subjectConstants.ELA,
       mcasConstants: [
         mcasConstants.ADVANCED,
