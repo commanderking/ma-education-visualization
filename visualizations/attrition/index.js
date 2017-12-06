@@ -7,19 +7,31 @@
 
     const attritionConstants = {
       STUDENT_COUNT: 'All total',
-      ATTRITION_COUNT: 'All # attrit',
-      ATTRITION_COUNT_K: 'K total',
-      ATTRITION_COUNT_1: '1 total',
-      ATTRITION_COUNT_2: '2 total',
-      ATTRITION_COUNT_3: '3 total',
-      ATTRITION_COUNT_4: '4 total',
-      ATTRITION_COUNT_5: '5 total',
-      ATTRITION_COUNT_6: '6 total',
-      ATTRITION_COUNT_7: '7 total',
-      ATTRITION_COUNT_8: '8 total',
-      ATTRITION_COUNT_9: '9 total',
-      ATTRITION_COUNT_10: '10 total',
-      ATTRITION_COUNT_11: '11 total'
+      ATTRITION_COUNT: 'Attrition',
+      ATTRITION_COUNT_K: 'K',
+      ATTRITION_COUNT_1: '1',
+      ATTRITION_COUNT_2: '2',
+      ATTRITION_COUNT_3: '3',
+      ATTRITION_COUNT_4: '4',
+      ATTRITION_COUNT_5: '5',
+      ATTRITION_COUNT_6: '6',
+      ATTRITION_COUNT_7: '7',
+      ATTRITION_COUNT_8: '8',
+      ATTRITION_COUNT_9: '9',
+      ATTRITION_COUNT_10: '10',
+      ATTRITION_COUNT_11: '11',
+      TOTAL_COUNT_K: 'K total',
+      TOTAL_COUNT_1: '1 total',
+      TOTAL_COUNT_2: '2 total',
+      TOTAL_COUNT_3: '3 total',
+      TOTAL_COUNT_4: '4 total',
+      TOTAL_COUNT_5: '5 total',
+      TOTAL_COUNT_6: '6 total',
+      TOTAL_COUNT_7: '7 total',
+      TOTAL_COUNT_8: '8 total',
+      TOTAL_COUNT_9: '9 total',
+      TOTAL_COUNT_10: '10 total',
+      TOTAL_COUNT_11: '11 total',
     }
 
     const raceConsts = {
@@ -91,7 +103,6 @@
     }
 
     const filterForTrends = (payload, data) => {
-      console.log('filtering for trends');
       const allStudentsData = filterByStudentType(data, payload.studentSubgroup);
 
       const years = ['2011-12', '2012-13', '2013-14', '2014-15', '2015-16', '2016-17'];
@@ -114,7 +125,6 @@
         };
       });
 
-      console.log(yearlySummary);
       return yearlySummary;
     }
 
@@ -135,15 +145,22 @@
           charterSummaryData[constant] += school[constant] || 0;
         })
       });
-
       return charterSummaryData;
     }
 
     const createCategoryData = (charterData, traditionalData, category) => {
-      return {
-        name: category,
-        [districtConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[attritionConstants.STUDENT_COUNT],
-        [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[attritionConstants.STUDENT_COUNT]
+      if (category === attritionConstants.ATTRITION_COUNT) {
+        return {
+          name: category,
+          [districtConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[attritionConstants.STUDENT_COUNT],
+          [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[attritionConstants.STUDENT_COUNT]
+        }
+      } else {
+        return {
+          name: category,
+          [districtConstants.CHARTER_SCHOOLS]: charterData[category] / charterData[category + " total"],
+          [districtConstants.TRADITIONAL_PUBLIC_SCHOOLS]: traditionalData[category] / traditionalData[category + " total"]
+        }
       }
     }
 
@@ -152,8 +169,11 @@
       const processedData = categoriesArray.map((category) => {
         return createCategoryData(charterData, traditionalData, category);
       });
-
-      return processedData;
+      // Hard code to omit extra data from seeping to graph for K-12 trends
+      const filteredData = processedData.filter(grade => {
+        return !grade.name.includes('total');
+      })
+      return filteredData;
     };
 
     const renderOverviewData = () => {
